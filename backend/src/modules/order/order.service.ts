@@ -126,6 +126,8 @@ export class OrderService {
     orderId: number,
     next: OrderStatus,
     providerId?: number,
+    operator: string = 'system',
+    remark?: string,
   ): Promise<void> {
     const order = await this.prisma.order.findUnique({ where: { id: orderId } });
     if (!order) bizError('订单不存在');
@@ -137,12 +139,25 @@ export class OrderService {
       );
     }
 
-    await this.prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: next,
-        ...(providerId !== undefined ? { providerId } : {}),
-      },
-    });
+    const fromStatus = order.status;
+
+    await this.prisma.$transaction([
+      this.prisma.order.update({
+        where: { id: orderId },
+        data: {
+          status: next,
+          ...(providerId !== undefined ? { providerId } : {}),
+        },
+      }),
+      this.prisma.orderStatusLog.create({
+        data: {
+          orderId,
+          fromStatus,
+          toStatus: next,
+          operator,
+          remark,
+        },
+      }),
+    ]);
   }
 }

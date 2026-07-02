@@ -104,14 +104,31 @@ model Order {
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
-  user      User       @relation(fields: [userId], references: [id])
-  provider  Provider?  @relation(fields: [providerId], references: [id])
-  request   ServiceRequest? @relation(fields: [requestId], references: [id])
-  job       Job?
+  user         User       @relation(fields: [userId], references: [id])
+  provider     Provider?  @relation(fields: [providerId], references: [id])
+  request      ServiceRequest? @relation(fields: [requestId], references: [id])
+  job          Job?
+  statusLogs   OrderStatusLog[]
 
   @@index([status])
   @@index([providerId])
   @@map("orders")
+}
+
+// ============ 订单状态流转记录 ============
+model OrderStatusLog {
+  id         Int         @id @default(autoincrement())
+  orderId    Int         @map("order_id")
+  fromStatus OrderStatus @map("from_status")
+  toStatus   OrderStatus @map("to_status")
+  operator   String?     @db.VarChar(64)
+  remark     String?     @db.Text
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+  @@map("order_status_logs")
 }
 
 // ============ 派单任务 ============
