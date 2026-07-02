@@ -168,11 +168,12 @@ export class DispatchService {
     await this.prisma.order.update({
       where: { id: orderId },
       data: {
-        status: 'completed',
         remark: remark ?? null,
         images: images && images.length > 0 ? (images as unknown as object) : undefined,
       },
     });
+
+    await this.orderService.transition(orderId, 'completed');
 
     await this.prisma.provider.update({
       where: { id: providerId },
