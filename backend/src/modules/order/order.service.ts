@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../ai/ai.service';
 import { bizError } from '../../common/exceptions/biz.exception';
-import { OrderStatus } from '@prisma/client';
+
+type OrderStatus = string;
 
 // 各类目基础定价(MVP固定, 后续可由后端规则引擎/师傅报价替代)
 const CATEGORY_PRICE: Record<string, number> = {
@@ -49,7 +50,7 @@ export class OrderService {
         aiCategory: parsed.category,
         aiProblem: parsed.problem,
         aiUrgency: parsed.urgency,
-        aiResult: parsed as unknown as object,
+        aiResult: JSON.stringify(parsed),
       },
     });
 
