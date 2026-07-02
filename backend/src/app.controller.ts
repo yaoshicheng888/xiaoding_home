@@ -13,7 +13,7 @@ export class AppController {
       docs: {
         ai: 'POST /api/ai/parse',
         userLogin: 'POST /api/user/login',
-        userInfo: 'GET /api/user/login',
+        userInfo: 'GET /api/user/info',
         createRequest: 'POST /api/request/create',
         createOrder: 'POST /api/order/create',
         orderList: 'GET /api/order/list',
