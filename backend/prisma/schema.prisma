@@ -1,0 +1,131 @@
+// 小钉到家 - Prisma Schema (MVP)
+// 数据库: MySQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 订单状态枚举
+// created  -> 待派单
+// assigned -> 已派单(待接单)
+// accepted -> 已接单
+// doing    -> 服务中
+// completed-> 已完成
+enum OrderStatus {
+  created
+  assigned
+  accepted
+  doing
+  completed
+}
+
+// 派单任务类型
+enum JobType {
+  auto
+  manual
+}
+
+enum JobStatus {
+  pending
+  taken
+  failed
+}
+
+// ============ 用户表 ============
+model User {
+  id        Int      @id @default(autoincrement())
+  phone     String   @unique
+  name      String?  @db.VarChar(64)
+  avatar    String?  @db.VarChar(255)
+  city      String?  @db.VarChar(64)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  serviceRequests ServiceRequest[]
+  orders          Order[]
+
+  @@map("users")
+}
+
+// ============ 师傅表 ============
+model Provider {
+  id        Int      @id @default(autoincrement())
+  phone     String   @unique
+  name      String   @db.VarChar(64)
+  skillTags String   @default("通用") @map("skill_tags") @db.VarChar(255)
+  status    String   @default("online") @db.VarChar(32) // online / offline / busy
+  rating    Decimal  @default(5.0) @db.Decimal(2, 1)
+  balance   Decimal  @default(0) @db.Decimal(10, 2)
+  city      String?  @db.VarChar(64)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  jobs   Job[]
+  orders Order[]
+
+  @@map("providers")
+}
+
+// ============ AI解析单 ============
+model ServiceRequest {
+  id          Int      @id @default(autoincrement())
+  userId      Int     @map("user_id")
+  rawText     String   @map("raw_text") @db.Text
+  aiCategory  String?  @map("ai_category") @db.VarChar(64)
+  aiProblem   String?  @map("ai_problem") @db.VarChar(128)
+  aiUrgency   String?  @map("ai_urgency") @db.VarChar(16)
+  aiResult    Json?    @map("ai_result_json")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user   User    @relation(fields: [userId], references: [id])
+  orders Order[]
+
+  @@map("service_requests")
+}
+
+// ============ 订单表 (核心) ============
+model Order {
+  id          Int         @id @default(autoincrement())
+  requestId   Int?        @map("request_id")
+  userId      Int         @map("user_id")
+  providerId  Int?        @map("provider_id")
+  status      OrderStatus @default(created)
+  category    String?     @db.VarChar(64)
+  description String?     @db.Text
+  price       Decimal     @default(0) @db.Decimal(10, 2)
+  commission  Decimal     @default(0) @db.Decimal(10, 2)
+  remark      String?     @db.Text
+  images      Json?
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  user      User       @relation(fields: [userId], references: [id])
+  provider  Provider?  @relation(fields: [providerId], references: [id])
+  request   ServiceRequest? @relation(fields: [requestId], references: [id])
+  job       Job?
+
+  @@index([status])
+  @@index([providerId])
+  @@map("orders")
+}
+
+// ============ 派单任务 ============
+model Job {
+  id         Int       @id @default(autoincrement())
+  orderId    Int       @unique @map("order_id")
+  providerId Int       @map("provider_id")
+  type       JobType   @default(auto)
+  status     JobStatus @default(pending)
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  order    Order    @relation(fields: [orderId], references: [id])
+  provider Provider @relation(fields: [providerId], references: [id])
+
+  @@index([providerId, status])
+  @@map("jobs")
+}
