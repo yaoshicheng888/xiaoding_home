@@ -17,7 +17,7 @@ const PAYMENT_MAP: Record<string, { label: string; color: string }> = {
 export default function MyOrders({ onDetail, onBack }: { onDetail: (id: number) => void; onBack: () => void }) {
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"active" | "completed">("active");
+  const [activeTab, setActiveTab] = useState<"active" | "completed" | "cancelled">("active");
 
   const token = localStorage.getItem("provider_token") || "";
 
@@ -41,7 +41,8 @@ export default function MyOrders({ onDetail, onBack }: { onDetail: (id: number) 
 
   const activeOrders = list.filter(o => o.status === "accepted" || o.status === "doing");
   const completedOrders = list.filter(o => o.status === "completed");
-  const displayList = activeTab === "active" ? activeOrders : completedOrders;
+  const cancelledOrders = list.filter(o => o.status === "cancelled");
+  const displayList = activeTab === "active" ? activeOrders : activeTab === "completed" ? completedOrders : cancelledOrders;
 
   return (
     <div style={{ maxWidth: 480, margin: "0 auto" }}>
@@ -94,7 +95,22 @@ export default function MyOrders({ onDetail, onBack }: { onDetail: (id: number) 
           }}
           onClick={() => setActiveTab("completed")}
         >
-          已完成
+          已完成 ({completedOrders.length})
+        </div>
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
+            padding: "8px 0",
+            fontSize: 16,
+            color: activeTab === "cancelled" ? "#1677ff" : "#666",
+            fontWeight: activeTab === "cancelled" ? "bold" : "normal",
+            borderBottom: activeTab === "cancelled" ? "2px solid #1677ff" : "none",
+            cursor: "pointer"
+          }}
+          onClick={() => setActiveTab("cancelled")}
+        >
+          已取消 ({cancelledOrders.length})
         </div>
       </div>
 
@@ -104,7 +120,7 @@ export default function MyOrders({ onDetail, onBack }: { onDetail: (id: number) 
         )}
         {!loading && displayList.length === 0 && (
           <p style={{ textAlign: "center", color: "#999", padding: 40 }}>
-            {activeTab === "active" ? "暂无进行中的订单" : "暂无已完成订单"}
+            {activeTab === "active" ? "暂无进行中的订单" : activeTab === "completed" ? "暂无已完成订单" : "暂无已取消订单"}
           </p>
         )}
         {displayList.map((item: any) => {

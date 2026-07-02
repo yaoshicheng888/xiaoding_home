@@ -11,6 +11,8 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 
 export default function Detail({ orderId, onBack }: { orderId: number; onBack: () => void }) {
   const [order, setOrder] = useState<any>(null);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [remark, setRemark] = useState("");
   const token = localStorage.getItem("provider_token") || "";
 
   const load = async () => {
@@ -137,6 +139,101 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
             创建时间：{order.createdAt ? new Date(order.createdAt).toLocaleString() : "-"}
           </p>
         </div>
+
+        {order.status === "doing" && (
+          <div style={{
+            backgroundColor: "#fff",
+            borderRadius: 8,
+            padding: 20,
+            marginTop: 12
+          }}>
+            <h3 style={{ fontSize: 16, margin: "0 0 12px 0" }}>上传凭证</h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+              {uploadedImages.map((img, idx) => (
+                <div key={idx} style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 8,
+                  border: "1px solid #e5e7eb",
+                  overflow: "hidden",
+                  position: "relative"
+                }}>
+                  <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <span
+                    onClick={() => setUploadedImages(uploadedImages.filter((_, i) => i !== idx))}
+                    style={{
+                      position: "absolute",
+                      top: 2,
+                      right: 4,
+                      color: "#ef4444",
+                      cursor: "pointer",
+                      fontSize: 14,
+                      fontWeight: "bold",
+                      background: "rgba(255,255,255,0.7)",
+                      borderRadius: "50%",
+                      width: 18,
+                      height: 18,
+                      lineHeight: "18px",
+                      textAlign: "center"
+                    }}
+                  >
+                    ×
+                  </span>
+                </div>
+              ))}
+              <label style={{
+                width: 80,
+                height: 80,
+                borderRadius: 8,
+                border: "1px dashed #d1d5db",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: "#999",
+                fontSize: 28
+              }}>
+                +
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        if (ev.target?.result) {
+                          setUploadedImages([...uploadedImages, ev.target.result as string]);
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                      e.target.value = "";
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            <div>
+              <div style={{ fontSize: 14, color: "#666", marginBottom: 6 }}>文字说明</div>
+              <textarea
+                value={remark}
+                onChange={(e) => setRemark(e.target.value)}
+                placeholder="请输入服务说明..."
+                style={{
+                  width: "100%",
+                  minHeight: 80,
+                  borderRadius: 8,
+                  border: "1px solid #d1d5db",
+                  padding: 10,
+                  fontSize: 14,
+                  resize: "vertical",
+                  boxSizing: "border-box"
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div style={{
@@ -165,7 +262,7 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
               }}
               onClick={handleStart}
             >
-              开始服务
+              开始上门
             </button>
           )}
           {order.status === "doing" && (

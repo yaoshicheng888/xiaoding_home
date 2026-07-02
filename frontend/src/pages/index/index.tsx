@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, Input, Button } from "@tarojs/components";
+import { View, Text, Input, Button, Image } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { aiParse } from "../../api";
 
@@ -13,6 +13,24 @@ const SHORTCUTS = [
 export default function Index() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+
+  const handleChooseImage = () => {
+    Taro.chooseImage({
+      count: 3 - images.length,
+      sizeType: ["compressed"],
+      sourceType: ["album", "camera"],
+      success: (res) => {
+        setImages([...images, ...res.tempFilePaths]);
+      }
+    });
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
 
   const handleSubmit = async () => {
     if (!text.trim()) {
@@ -53,16 +71,60 @@ export default function Index() {
         </View>
 
         <View style={{ backgroundColor: "#fff", borderRadius: 12, padding: 16 }}>
-          <Input
-            style={{
-              height: 48,
-              fontSize: 16,
-              marginBottom: 12
-            }}
-            placeholder="请输入您的问题，例如：空调不制冷"
-            onInput={(e) => setText(e.detail.value)}
-            value={text}
-          />
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+            <Input
+              style={{
+                height: 48,
+                fontSize: 16,
+                flex: 1
+              }}
+              placeholder="请输入您的问题，例如：空调不制冷"
+              onInput={(e) => setText(e.detail.value)}
+              value={text}
+            />
+            <View
+              style={{
+                marginLeft: 8,
+                width: 48,
+                height: 48,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#f5f5f5",
+                borderRadius: 8
+              }}
+              onClick={handleChooseImage}
+            >
+              <Text style={{ fontSize: 24 }}>📷</Text>
+            </View>
+          </View>
+          {images.length > 0 && (
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+              {images.map((img, idx) => (
+                <View key={idx} style={{ position: "relative" }}>
+                  <Image src={img} style={{ width: 80, height: 80, borderRadius: 8 }} mode="aspectFill" />
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: -6,
+                      right: -6,
+                      width: 20,
+                      height: 20,
+                      borderRadius: 10,
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                    onClick={() => handleRemoveImage(idx)}
+                  >
+                    <Text style={{ color: "#fff", fontSize: 12 }}>✕</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+          <Text style={{ fontSize: 12, color: "#999", marginBottom: 12 }}>
+            支持文字、语音、图片输入
+          </Text>
           <Button
             style={{
               height: 48,

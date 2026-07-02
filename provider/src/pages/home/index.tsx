@@ -15,6 +15,7 @@ export default function Home({ onNavigate }: HomeProps) {
   const [stats, setStats] = useState({ todayOrders: 0, todayIncome: 0, pendingOrders: 0 });
   const [income, setIncome] = useState({ balance: 0, totalIncome: 0, settledIncome: 0, pendingIncome: 0 });
   const [loading, setLoading] = useState(true);
+  const [online, setOnline] = useState(true);
 
   const loadData = async () => {
     const token = localStorage.getItem("provider_token");
@@ -59,15 +60,20 @@ export default function Home({ onNavigate }: HomeProps) {
               欢迎回来，师傅
             </div>
           </div>
-          <div style={{
-            padding: "8px 16px",
-            borderRadius: "20px",
-            backgroundColor: STATUS_MAP["online"].bg,
-            color: STATUS_MAP["online"].color,
-            fontSize: "14px",
-            fontWeight: "bold"
-          }}>
-            {STATUS_MAP["online"].label}
+          <div
+            onClick={() => setOnline(!online)}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "20px",
+              backgroundColor: STATUS_MAP[online ? "online" : "offline"].bg,
+              color: STATUS_MAP[online ? "online" : "offline"].color,
+              fontSize: "14px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              userSelect: "none"
+            }}
+          >
+            {STATUS_MAP[online ? "online" : "offline"].label}
           </div>
         </div>
       </div>

@@ -84,7 +84,7 @@ export interface Stats {
   todayRevenue: number;
   pendingOrders: number;
   onlineProviders: number;
-  completedOrders: number;
+  abnormalOrders: number;
 }
 
 export const getStats = async () => {

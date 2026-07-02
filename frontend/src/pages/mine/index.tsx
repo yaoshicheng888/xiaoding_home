@@ -51,7 +51,9 @@ export default function MinePage() {
   };
 
   const handleMenuClick = (url: string) => {
-    if (url) {
+    if (url === "/pages/index/index") {
+      Taro.showToast({ title: "功能开发中", icon: "none" });
+    } else if (url) {
       Taro.navigateTo({ url });
     }
   };

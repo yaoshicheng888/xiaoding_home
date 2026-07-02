@@ -10,13 +10,13 @@ const URGENCY_MAP = {
 };
 
 const CATEGORY_PRICE = {
-  "空调维修": 120,
-  "疏通": 150,
-  "水管维修": 100,
-  "电路维修": 120,
-  "家电维修": 100,
-  "开锁": 80,
-  "通用": 90
+  "空调维修": [80, 150],
+  "疏通": [100, 200],
+  "水管维修": [60, 130],
+  "电路维修": [80, 150],
+  "家电维修": [60, 130],
+  "开锁": [50, 100],
+  "通用": [60, 120]
 };
 
 export default function Result() {
@@ -52,7 +52,7 @@ export default function Result() {
   }
 
   const aiResult = data.aiResult || {};
-  const price = CATEGORY_PRICE[aiResult.category] || 90;
+  const priceRange = CATEGORY_PRICE[aiResult.category] || [60, 120];
 
   return (
     <View style={{ padding: 20 }}>
@@ -91,27 +91,47 @@ export default function Result() {
           paddingTop: 12,
           borderTop: "1px solid #f0f0f0"
         }}>
-          <Text style={{ fontSize: 16, color: "#666" }}>预估价格</Text>
-          <Text style={{ fontSize: 24, color: "#ff4d4f", fontWeight: "bold" }}>
-            ¥{price}
-          </Text>
+          <Text style={{ fontSize: 16, color: "#666" }}>预计费用</Text>
+          <View style={{ alignItems: "flex-end" }}>
+            <Text style={{ fontSize: 24, color: "#ff4d4f", fontWeight: "bold" }}>
+              ¥{priceRange[0]}~{priceRange[1]}
+            </Text>
+            <Text style={{ fontSize: 12, color: "#999", marginTop: 2 }}>（参考）</Text>
+          </View>
         </View>
       </View>
 
-      <Button
-        style={{
-          height: 52,
-          borderRadius: 8,
-          backgroundColor: "#ff4d4f",
-          color: "#fff",
-          fontSize: 18
-        }}
-        onClick={handleOrder}
-        loading={loading}
-        disabled={loading}
-      >
-        立即下单
-      </Button>
+      <View style={{ flexDirection: "row", gap: 12 }}>
+        <Button
+          style={{
+            height: 52,
+            borderRadius: 8,
+            backgroundColor: "#fff",
+            color: "#333",
+            fontSize: 18,
+            flex: 1,
+            border: "1px solid #d9d9d9"
+          }}
+          onClick={() => Taro.navigateBack()}
+        >
+          重新输入
+        </Button>
+        <Button
+          style={{
+            height: 52,
+            borderRadius: 8,
+            backgroundColor: "#ff4d4f",
+            color: "#fff",
+            fontSize: 18,
+            flex: 1
+          }}
+          onClick={handleOrder}
+          loading={loading}
+          disabled={loading}
+        >
+          立即下单
+        </Button>
+      </View>
     </View>
   );
 }

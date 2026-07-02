@@ -9,6 +9,12 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
   completed: { label: "已完成", color: "#6b7280" }
 };
 
+const URGENCY_MAP: Record<string, { label: string; color: string; bg: string }> = {
+  high: { label: "紧急", color: "#ef4444", bg: "#fef2f2" },
+  medium: { label: "较急", color: "#f97316", bg: "#fff7ed" },
+  low: { label: "普通", color: "#6b7280", bg: "#f3f4f6" }
+};
+
 export default function Orders({ onDetail, onBack }: { onDetail: (id: number) => void; onBack: () => void }) {
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -73,6 +79,8 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
         )}
         {displayList.map((item: any) => {
           const status = STATUS_MAP[item.status] || {};
+          const urgency = URGENCY_MAP[item.urgency] || URGENCY_MAP["low"];
+          const distance = item.distance || "2.5km";
           return (
             <div
               key={item.id}
@@ -94,6 +102,21 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
               <p style={{ color: "#666", fontSize: 14, margin: "0 0 8px 0" }}>
                 {item.description}
               </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <span style={{
+                  padding: "2px 8px",
+                  borderRadius: 4,
+                  backgroundColor: urgency.bg,
+                  color: urgency.color,
+                  fontSize: 12,
+                  fontWeight: "bold"
+                }}>
+                  {urgency.label}
+                </span>
+                <span style={{ color: "#999", fontSize: 12 }}>
+                  📍 {distance}
+                </span>
+              </div>
               {item.user && (
                 <p style={{ color: "#999", fontSize: 12, margin: "0 0 12px 0" }}>
                   {item.user.name} · {item.user.phone} · {item.user.city}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout, Menu, Table, Tag, Button, Modal, Select, message, Timeline, Card, Row, Col } from 'antd';
 import { 
   ShoppingCartOutlined, 
@@ -291,26 +291,37 @@ function DashboardPage() {
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     fetchData();
     window.addEventListener('refresh', fetchData);
     return () => window.removeEventListener('refresh', fetchData);
-  });
+  }, []);
 
   const cardData = [
     { key: 'todayOrders', label: '今日订单', value: stats?.todayOrders || 0, color: '#1677ff' },
     { key: 'todayRevenue', label: '今日成交金额', value: `¥${stats?.todayRevenue || 0}`, color: '#10b981' },
     { key: 'pendingOrders', label: '待处理订单', value: stats?.pendingOrders || 0, color: '#f59e0b' },
     { key: 'onlineProviders', label: '在线师傅', value: stats?.onlineProviders || 0, color: '#06b6d4' },
-    { key: 'completedOrders', label: '已完成订单', value: stats?.completedOrders || 0, color: '#6b7280' },
+    { key: 'abnormalOrders', label: '异常订单数量', value: stats?.abnormalOrders || 0, color: '#ef4444' },
   ];
+
+  const trendData = [
+    { day: '周一', count: 12 },
+    { day: '周二', count: 18 },
+    { day: '周三', count: 8 },
+    { day: '周四', count: 25 },
+    { day: '周五', count: 20 },
+    { day: '周六', count: 30 },
+    { day: '周日', count: 22 },
+  ];
+  const maxCount = Math.max(...trendData.map(d => d.count));
 
   return (
     <div>
       <h2 style={{ marginBottom: 20 }}>控制台</h2>
       <Row gutter={[16, 16]}>
         {cardData.map((item) => (
-          <Col span={6} key={item.key}>
+          <Col span={4} key={item.key}>
             <Card 
               loading={loading}
               hoverable
@@ -326,6 +337,26 @@ function DashboardPage() {
           </Col>
         ))}
       </Row>
+      <Card title="订单趋势（近7天）" style={{ marginTop: 24, borderRadius: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', height: 200, gap: 12, padding: '0 20px' }}>
+          {trendData.map((item) => (
+            <div key={item.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ fontSize: 12, color: '#666', marginBottom: 4 }}>{item.count}</div>
+              <div
+                style={{
+                  width: '100%',
+                  maxWidth: 48,
+                  height: (item.count / maxCount) * 140,
+                  backgroundColor: '#1677ff',
+                  borderRadius: '4px 4px 0 0',
+                  transition: 'height 0.3s',
+                }}
+              />
+              <div style={{ fontSize: 12, color: '#999', marginTop: 8 }}>{item.day}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
@@ -346,11 +377,11 @@ function OrderPage() {
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     fetchData();
     window.addEventListener('refresh', fetchData);
     return () => window.removeEventListener('refresh', fetchData);
-  });
+  }, []);
 
   return (
     <div>
@@ -370,23 +401,53 @@ function ProviderPage() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useState(async () => {
-    setLoading(true);
-    try {
-      const data = await getProviders();
-      setProviders(data);
-    } catch (e) {
-      message.error('获取师傅列表失败');
-    } finally {
-      setLoading(false);
-    }
-  });
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await getProviders();
+        setProviders(data);
+      } catch (e) {
+        message.error('获取师傅列表失败');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const providerColumnsWithAction = [
+    ...providerColumns,
+    {
+      title: '操作',
+      key: 'action',
+      render: (_: unknown, record: Provider) => (
+        <div>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => message.info(`师傅 ${record.name} 上线/下线操作`)}
+            style={{ marginRight: 8 }}
+          >
+            上线/下线
+          </Button>
+          <Button
+            size="small"
+            danger
+            onClick={() => message.info(`师傅 ${record.name} 降权操作`)}
+          >
+            降权
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div>
       <h2 style={{ marginBottom: 20 }}>师傅管理</h2>
       <Table
-        columns={providerColumns}
+        columns={providerColumnsWithAction}
         dataSource={providers}
         rowKey="id"
         loading={loading}
@@ -400,17 +461,20 @@ function UserPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useState(async () => {
-    setLoading(true);
-    try {
-      const data = await getUsers();
-      setUsers(data);
-    } catch (e) {
-      message.error('获取用户列表失败');
-    } finally {
-      setLoading(false);
-    }
-  });
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await getUsers();
+        setUsers(data);
+      } catch (e) {
+        message.error('获取用户列表失败');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -430,17 +494,20 @@ function FinancePage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useState(async () => {
-    setLoading(true);
-    try {
-      const data = await getPayments();
-      setPayments(data);
-    } catch (e) {
-      message.error('获取支付记录失败');
-    } finally {
-      setLoading(false);
-    }
-  });
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await getPayments();
+        setPayments(data);
+      } catch (e) {
+        message.error('获取支付记录失败');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -461,23 +528,53 @@ function AfterSalePage() {
   const [afterSales, setAfterSales] = useState<AfterSale[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useState(async () => {
-    setLoading(true);
-    try {
-      const data = await getAfterSales();
-      setAfterSales(data);
-    } catch (e) {
-      message.error('获取售后记录失败');
-    } finally {
-      setLoading(false);
-    }
-  });
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await getAfterSales();
+        setAfterSales(data);
+      } catch (e) {
+        message.error('获取售后记录失败');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const afterSaleColumnsWithAction = [
+    ...afterSaleColumns,
+    {
+      title: '操作',
+      key: 'action',
+      render: (_: unknown, record: AfterSale) => (
+        <div>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => message.info(`处理售后单 #${record.id}`)}
+            style={{ marginRight: 8 }}
+          >
+            处理
+          </Button>
+          <Button
+            size="small"
+            danger
+            onClick={() => message.info(`拒绝售后单 #${record.id}`)}
+          >
+            拒绝
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div>
       <h2 style={{ marginBottom: 20 }}>售后管理</h2>
       <Table
-        columns={afterSaleColumns}
+        columns={afterSaleColumnsWithAction}
         dataSource={afterSales}
         rowKey="id"
         loading={loading}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text } from "@tarojs/components";
+import { View, Text, Button } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { getOrder } from "../../api";
 
@@ -107,6 +107,18 @@ export default function OrderPage() {
           <Text style={{ color: "#999" }}>师傅</Text>
           <Text>{order.provider?.name || "等待派单中..."}</Text>
         </View>
+        {order.provider?.phone && (
+          <View style={{ marginBottom: 12, flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={{ color: "#999" }}>师傅电话</Text>
+            <Text style={{ color: "#1677ff" }}>{order.provider.phone}</Text>
+          </View>
+        )}
+        {order.provider?.rating && (
+          <View style={{ marginBottom: 12, flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={{ color: "#999" }}>师傅评分</Text>
+            <Text style={{ color: "#f59e0b" }}>⭐ {order.provider.rating}</Text>
+          </View>
+        )}
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ color: "#999" }}>价格</Text>
           <Text style={{ color: "#ff4d4f", fontWeight: "bold", fontSize: 18 }}>
@@ -116,16 +128,33 @@ export default function OrderPage() {
       </View>
 
       {order.status === "completed" && (
-        <View style={{
-          marginTop: 20,
-          backgroundColor: "#f0f9ff",
-          borderRadius: 8,
-          padding: 16,
-          textAlign: "center"
-        }}>
-          <Text style={{ color: "#10b981", fontSize: 16 }}>
-            服务已完成
-          </Text>
+        <View style={{ marginTop: 20 }}>
+          <View style={{
+            backgroundColor: "#f0f9ff",
+            borderRadius: 8,
+            padding: 16,
+            textAlign: "center",
+            marginBottom: 12
+          }}>
+            <Text style={{ color: "#10b981", fontSize: 16 }}>
+              服务已完成
+            </Text>
+          </View>
+          <Button
+            style={{
+              height: 48,
+              borderRadius: 8,
+              backgroundColor: "#fff",
+              color: "#ff4d4f",
+              fontSize: 16,
+              border: "1px solid #ff4d4f"
+            }}
+            onClick={() => {
+              Taro.showToast({ title: "售后申请已提交", icon: "none" });
+            }}
+          >
+            申请售后
+          </Button>
         </View>
       )}
     </View>
