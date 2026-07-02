@@ -1,0 +1,230 @@
+{
+  "info": {
+    "name": "小钉到家 MVP API",
+    "description": "小钉到家后端服务接口测试集 - 完整订单流程",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api", "type": "string" },
+    { "key": "userToken", "value": "", "type": "string" },
+    { "key": "providerToken", "value": "", "type": "string" },
+    { "key": "requestId", "value": "1", "type": "string" },
+    { "key": "orderId", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "01 - AI 解析",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/ai/parse",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"text\":\"空调不制冷，还漏水\"}"
+        },
+        "description": "AI 智能解析用户自然语言描述，返回结构化类目、问题、紧急度、标签"
+      }
+    },
+    {
+      "name": "02 - 用户登录",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["var jsonData = pm.response.json();", "pm.collectionVariables.set(\"userToken\", jsonData.data.token);"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/user/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"phone\":\"13800000001\"}"
+        },
+        "description": "用户手机号一键登录，不存在则自动注册。返回 token 和用户信息"
+      }
+    },
+    {
+      "name": "03 - 用户信息",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+        "url": "{{baseUrl}}/user/info",
+        "description": "获取当前登录用户的详细信息"
+      }
+    },
+    {
+      "name": "04 - 创建 AI 解析请求",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["var jsonData = pm.response.json();", "pm.collectionVariables.set(\"requestId\", jsonData.data.requestId);"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{userToken}}" }
+        ],
+        "url": "{{baseUrl}}/request/create",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"text\":\"空调不制冷，还漏水\"}"
+        },
+        "description": "用户提交需求描述，后端调用 AI 解析并存入 service_request 表"
+      }
+    },
+    {
+      "name": "05 - 创建订单",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["var jsonData = pm.response.json();", "pm.collectionVariables.set(\"orderId\", jsonData.data.orderId);"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{userToken}}" }
+        ],
+        "url": "{{baseUrl}}/order/create",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"requestId\":{{requestId}}}"
+        },
+        "description": "基于 AI 解析请求创建订单，价格由后端按类目自动计算（禁止前端传入）"
+      }
+    },
+    {
+      "name": "06 - 用户订单列表",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+        "url": "{{baseUrl}}/order/list",
+        "description": "获取当前用户的所有订单列表"
+      }
+    },
+    {
+      "name": "07 - 订单详情",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/order/detail?orderId={{orderId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["order", "detail"],
+          "query": [{ "key": "orderId", "value": "{{orderId}}" }]
+        },
+        "description": "查看订单详细信息，包含用户、师傅、AI 解析单等关联数据"
+      }
+    },
+    {
+      "name": "08 - 师傅登录",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["var jsonData = pm.response.json();", "pm.collectionVariables.set(\"providerToken\", jsonData.data.token);"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/provider/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"phone\":\"13900000001\"}"
+        },
+        "description": "师傅手机号一键登录，不存在则自动注册（默认名为师傅+手机号后4位）"
+      }
+    },
+    {
+      "name": "09 - 自动派单（后台）",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/admin/dispatch/auto",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":{{orderId}}}"
+        },
+        "description": "后台自动派单：按技能标签匹配在线师傅，评分最高优先。MVP阶段接口公开"
+      }
+    },
+    {
+      "name": "10 - 手动派单（后台）",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/admin/dispatch/manual",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":{{orderId}},\"providerId\":1}"
+        },
+        "description": "后台手动派单：指定师傅 ID 进行派单。MVP阶段接口公开"
+      }
+    },
+    {
+      "name": "11 - 师傅抢单列表",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{providerToken}}" }],
+        "url": "{{baseUrl}}/provider/orders",
+        "description": "师傅端查看可抢订单：公开池订单(created) + 指定给我的订单(assigned)"
+      }
+    },
+    {
+      "name": "12 - 师傅接单",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{providerToken}}" }
+        ],
+        "url": "{{baseUrl}}/provider/take",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":{{orderId}}}"
+        },
+        "description": "师傅接单：公开池订单任何人可接，已派单订单需指定师傅本人接"
+      }
+    },
+    {
+      "name": "13 - 师傅开始服务",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{providerToken}}" }
+        ],
+        "url": "{{baseUrl}}/provider/start",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":{{orderId}}}"
+        },
+        "description": "师傅到达现场开始服务，师傅状态变为 busy，订单状态变为 doing"
+      }
+    },
+    {
+      "name": "14 - 师傅完工提交",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{providerToken}}" }
+        ],
+        "url": "{{baseUrl}}/provider/complete",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":{{orderId}},\"remark\":\"已更换空调压缩机，制冷恢复正常\",\"images\":[\"img1.jpg\",\"img2.jpg\"]}"
+        },
+        "description": "师傅完工提交，订单状态变为 completed，师傅恢复 online"
+      }
+    }
+  ]
+}
