@@ -1,7 +1,10 @@
 export default {
   pages: [
     'pages/index/index',
-    'pages/order/index'
+    'pages/order/index',
+    'pages/provider/login/index',
+    'pages/provider/orders/index',
+    'pages/provider/detail/index'
   ],
   window: {
     backgroundTextStyle: 'light',
