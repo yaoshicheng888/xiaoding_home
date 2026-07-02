@@ -1,10 +1,9 @@
 export default {
   pages: [
-    'pages/index/index',
-    'pages/order/index',
-    'pages/provider/login/index',
-    'pages/provider/orders/index',
-    'pages/provider/detail/index'
+    'pages/login/index',
+    'pages/home/index',
+    'pages/orders/index',
+    'pages/order-detail/index',
   ],
   window: {
     backgroundTextStyle: 'light',
@@ -14,17 +13,17 @@ export default {
   },
   tabBar: {
     color: '#999',
-    selectedColor: '#1a73e8',
+    selectedColor: '#1677ff',
     backgroundColor: '#fff',
     borderStyle: 'black',
     list: [
       {
-        pagePath: 'pages/index/index',
-        text: '首页'
+        pagePath: 'pages/home/index',
+        text: '首页',
       },
       {
-        pagePath: 'pages/order/index',
-        text: '订单'
+        pagePath: 'pages/orders/index',
+        text: '订单',
       }
     ]
   }

@@ -36,6 +36,7 @@
     "@tarojs/runtime": "4.2.0",
     "@tarojs/shared": "4.2.0",
     "@tarojs/taro": "4.2.0",
+    "axios": "^1.18.1",
     "babel-preset-taro": "^4.2.0",
     "enhanced-resolve": "^5.16.0",
     "react": "^18.0.0",
