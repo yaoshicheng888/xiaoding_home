@@ -1,6 +1,5 @@
-const BASE_URL = "http://localhost:3000/api";
+const BASE_URL = "/api";
 
-// 用户登录
 export const login = async (phone: string) => {
   const res = await fetch(`${BASE_URL}/user/login`, {
     method: "POST",
@@ -11,7 +10,6 @@ export const login = async (phone: string) => {
   return json.data;
 };
 
-// AI解析 + 创建请求（返回 requestId + aiResult）
 export const aiParse = async (text: string, token: string) => {
   const res = await fetch(`${BASE_URL}/request/create`, {
     method: "POST",
@@ -25,7 +23,6 @@ export const aiParse = async (text: string, token: string) => {
   return json.data;
 };
 
-// 创建订单
 export const createOrder = async (requestId: number, token: string) => {
   const res = await fetch(`${BASE_URL}/order/create`, {
     method: "POST",
@@ -39,7 +36,6 @@ export const createOrder = async (requestId: number, token: string) => {
   return json.data;
 };
 
-// 订单详情
 export const getOrder = async (orderId: number, token: string) => {
   const res = await fetch(`${BASE_URL}/order/detail?orderId=${orderId}`, {
     headers: {
