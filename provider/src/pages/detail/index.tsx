@@ -11,7 +11,6 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 
 export default function Detail({ orderId, onBack }: { orderId: number; onBack: () => void }) {
   const [order, setOrder] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("provider_token") || "";
 
   const load = async () => {
@@ -51,9 +50,9 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
     }
   };
 
-  const status = order ? (STATUS_MAP[order.status] || {}) : {};
+  const status = order ? (STATUS_MAP[order.status] || { label: order.status, color: "#666" }) : { label: "未知", color: "#666" };
 
-  if (!order && !loading) {
+  if (!order) {
     return (
       <div style={{ padding: 20, textAlign: "center" }}>
         <p>加载中...</p>

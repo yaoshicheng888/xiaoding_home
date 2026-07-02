@@ -81,6 +81,8 @@ model Order {
   request    ServiceRequest? @relation(fields: [requestId], references: [id])
   job        Job?
   statusLogs OrderStatusLog[]
+  payment    Payment?
+  afterSales AfterSale[]
 }
 
 // ============ 订单状态流转记录 ============
@@ -107,4 +109,31 @@ model Job {
 
   order    Order    @relation(fields: [orderId], references: [id])
   provider Provider @relation(fields: [providerId], references: [id])
+}
+
+// ============ 支付表 ============
+model Payment {
+  id           Int      @id @default(autoincrement())
+  orderId      Int      @unique
+  amount       Float
+  platformFee  Float    @default(0)
+  providerIncome Float  @default(0)
+  status       String   @default("pending") // pending / paid / settled / refunded
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+// ============ 售后表 ============
+model AfterSale {
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  reason      String
+  status      String   @default("pending") // pending / processing / resolved / rejected
+  freezeStatus String  @default("unfrozen") // frozen / unfrozen
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
 }

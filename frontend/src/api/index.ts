@@ -45,3 +45,36 @@ export const getOrder = async (orderId: number, token: string) => {
   const json = await res.json();
   return json.data;
 };
+
+export const getOrderList = async (token: string) => {
+  const res = await fetch(`${BASE_URL}/order/list`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  const json = await res.json();
+  return json.data;
+};
+
+export const getUserInfo = async (token: string) => {
+  const res = await fetch(`${BASE_URL}/user/info`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  const json = await res.json();
+  return json.data;
+};
+
+export const applyAfterSale = async (orderId: number, reason: string, token: string) => {
+  const res = await fetch(`${BASE_URL}/aftersale/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ orderId, reason })
+  });
+  const json = await res.json();
+  return json.data;
+};

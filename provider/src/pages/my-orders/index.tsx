@@ -1,24 +1,30 @@
 import { useEffect, useState } from "react";
-import { getOrders, takeOrder } from "../../api";
+import { getMyOrders } from "../../api";
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  created: { label: "待接单", color: "#f59e0b" },
-  assigned: { label: "已派单", color: "#3b82f6" },
   accepted: { label: "已接单", color: "#10b981" },
   doing: { label: "服务中", color: "#06b6d4" },
   completed: { label: "已完成", color: "#6b7280" }
 };
 
-export default function Orders({ onDetail, onBack }: { onDetail: (id: number) => void; onBack: () => void }) {
+const PAYMENT_MAP: Record<string, { label: string; color: string }> = {
+  pending: { label: "待支付", color: "#f59e0b" },
+  paid: { label: "已支付", color: "#3b82f6" },
+  settled: { label: "已结算", color: "#10b981" },
+  refunded: { label: "已退款", color: "#ef4444" }
+};
+
+export default function MyOrders({ onDetail, onBack }: { onDetail: (id: number) => void; onBack: () => void }) {
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"active" | "completed">("active");
 
   const token = localStorage.getItem("provider_token") || "";
 
   const load = async () => {
     setLoading(true);
     try {
-      const data = await getOrders(token);
+      const data = await getMyOrders(token);
       setList(data || []);
     } catch (e: any) {
       alert(e.message || "加载失败");
@@ -33,18 +39,9 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
     return () => clearInterval(timer);
   }, []);
 
-  const take = async (id: number) => {
-    if (!confirm("确认接单？")) return;
-    try {
-      await takeOrder(id, token);
-      alert("接单成功！");
-      load();
-    } catch (e: any) {
-      alert(e.message || "接单失败");
-    }
-  };
-
-  const displayList = list.filter(o => o.status === "created" || o.status === "assigned");
+  const activeOrders = list.filter(o => o.status === "accepted" || o.status === "doing");
+  const completedOrders = list.filter(o => o.status === "completed");
+  const displayList = activeTab === "active" ? activeOrders : completedOrders;
 
   return (
     <div style={{ maxWidth: 480, margin: "0 auto" }}>
@@ -61,7 +58,44 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
         >
           ← 返回
         </span>
-        <span style={{ fontSize: 16, fontWeight: "bold" }}>订单大厅</span>
+        <span style={{ fontSize: 16, fontWeight: "bold" }}>我的订单</span>
+      </div>
+
+      <div style={{
+        padding: "16px 20px",
+        backgroundColor: "#fff",
+        display: "flex"
+      }}>
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
+            padding: "8px 0",
+            fontSize: 16,
+            color: activeTab === "active" ? "#1677ff" : "#666",
+            fontWeight: activeTab === "active" ? "bold" : "normal",
+            borderBottom: activeTab === "active" ? "2px solid #1677ff" : "none",
+            cursor: "pointer"
+          }}
+          onClick={() => setActiveTab("active")}
+        >
+          进行中 ({activeOrders.length})
+        </div>
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
+            padding: "8px 0",
+            fontSize: 16,
+            color: activeTab === "completed" ? "#1677ff" : "#666",
+            fontWeight: activeTab === "completed" ? "bold" : "normal",
+            borderBottom: activeTab === "completed" ? "2px solid #1677ff" : "none",
+            cursor: "pointer"
+          }}
+          onClick={() => setActiveTab("completed")}
+        >
+          已完成
+        </div>
       </div>
 
       <div style={{ padding: 12 }}>
@@ -69,10 +103,13 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
           <p style={{ textAlign: "center", color: "#999", padding: 40 }}>加载中...</p>
         )}
         {!loading && displayList.length === 0 && (
-          <p style={{ textAlign: "center", color: "#999", padding: 40 }}>暂无待接订单</p>
+          <p style={{ textAlign: "center", color: "#999", padding: 40 }}>
+            {activeTab === "active" ? "暂无进行中的订单" : "暂无已完成订单"}
+          </p>
         )}
         {displayList.map((item: any) => {
           const status = STATUS_MAP[item.status] || {};
+          const payment = PAYMENT_MAP[item.paymentStatus] || {};
           return (
             <div
               key={item.id}
@@ -82,6 +119,7 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
                 padding: 16,
                 marginBottom: 12
               }}
+              onClick={() => onDetail(item.id)}
             >
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                 <span style={{ fontWeight: "bold", fontSize: 16 }}>
@@ -96,45 +134,17 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
               </p>
               {item.user && (
                 <p style={{ color: "#999", fontSize: 12, margin: "0 0 12px 0" }}>
-                  {item.user.name} · {item.user.phone} · {item.user.city}
+                  {item.user.name} · {item.user.phone}
                 </p>
               )}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ color: "#ff4d4f", fontSize: 20, fontWeight: "bold" }}>
                   ¥{item.price}
                 </span>
-                {item.status === "created" || item.status === "assigned" ? (
-                  <button
-                    style={{
-                      height: 36,
-                      padding: "0 20px",
-                      borderRadius: 6,
-                      backgroundColor: "#1677ff",
-                      color: "#fff",
-                      fontSize: 14,
-                      border: "none",
-                      cursor: "pointer"
-                    }}
-                    onClick={() => take(item.id)}
-                  >
-                    立即接单
-                  </button>
-                ) : (
-                  <button
-                    style={{
-                      height: 36,
-                      padding: "0 20px",
-                      borderRadius: 6,
-                      backgroundColor: "#f0f0f0",
-                      color: "#333",
-                      fontSize: 14,
-                      border: "none",
-                      cursor: "pointer"
-                    }}
-                    onClick={() => onDetail(item.id)}
-                  >
-                    查看详情
-                  </button>
+                {item.paymentStatus && (
+                  <span style={{ color: payment.color, fontSize: 12 }}>
+                    {payment.label}
+                  </span>
                 )}
               </div>
             </div>

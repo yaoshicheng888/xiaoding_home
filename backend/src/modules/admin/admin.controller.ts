@@ -75,4 +75,49 @@ export class AdminController {
       orderBy: { createdAt: 'asc' },
     });
   }
+
+  @Public()
+  @Get('stats')
+  async stats() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayOrders = await this.prisma.order.count({
+      where: { createdAt: { gte: today } },
+    });
+
+    const todayRevenue = await this.prisma.order.aggregate({
+      _sum: { price: true },
+      where: { createdAt: { gte: today } },
+    });
+
+    const pendingOrders = await this.prisma.order.count({
+      where: { status: { in: ['created', 'assigned', 'accepted', 'doing'] } },
+    });
+
+    const onlineProviders = await this.prisma.provider.count({
+      where: { status: 'online' },
+    });
+
+    const completedOrders = await this.prisma.order.count({
+      where: { status: 'completed' },
+    });
+
+    return {
+      todayOrders,
+      todayRevenue: todayRevenue._sum.price || 0,
+      pendingOrders,
+      onlineProviders,
+      completedOrders,
+    };
+  }
+
+  @Public()
+  @Get('users')
+  async users() {
+    return this.prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, phone: true, name: true, createdAt: true },
+    });
+  }
 }

@@ -61,3 +61,21 @@ export const getOrderDetail = async (orderId: number, token: string) => {
     headers: { Authorization: `Bearer ${token}` }
   });
 };
+
+export const getMyOrders = async (token: string) => {
+  return request("/provider/my-orders", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export const getIncome = async (token: string) => {
+  return request("/provider/income", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export const getStats = async (token: string) => {
+  return request("/provider/stats", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};

@@ -40,6 +40,21 @@ export class ProviderController {
     return this.providerService.listAvailableOrders(p.id);
   }
 
+  @Get('my-orders')
+  async myOrders(@CurrentUser() p: CurrentUserPayload) {
+    return this.providerService.listMyOrders(p.id);
+  }
+
+  @Get('income')
+  async income(@CurrentUser() p: CurrentUserPayload) {
+    return this.providerService.getIncome(p.id);
+  }
+
+  @Get('stats')
+  async stats(@CurrentUser() p: CurrentUserPayload) {
+    return this.providerService.getStats(p.id);
+  }
+
   @Post('take')
   async take(@CurrentUser() p: CurrentUserPayload, @Body() body: OrderIdDto) {
     return this.dispatchService.takeOrder(p.id, body.orderId);

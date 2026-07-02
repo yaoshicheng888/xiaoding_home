@@ -78,3 +78,59 @@ export const getOrderLogs = async (orderId: number) => {
   const res = await api.get(`/admin/orders/${orderId}/logs`);
   return res.data.data as OrderStatusLog[];
 };
+
+export interface Stats {
+  todayOrders: number;
+  todayRevenue: number;
+  pendingOrders: number;
+  onlineProviders: number;
+  completedOrders: number;
+}
+
+export const getStats = async () => {
+  const res = await api.get('/admin/stats');
+  return res.data.data as Stats;
+};
+
+export interface Payment {
+  id: number;
+  orderId: number;
+  amount: number;
+  platformFee: number;
+  providerIncome: number;
+  status: string;
+  createdAt: string;
+  order?: Order;
+}
+
+export const getPayments = async () => {
+  const res = await api.get('/admin/payments');
+  return res.data.data as Payment[];
+};
+
+export interface AfterSale {
+  id: number;
+  orderId: number;
+  reason: string;
+  status: string;
+  freezeStatus: string;
+  createdAt: string;
+  order?: Order;
+}
+
+export const getAfterSales = async () => {
+  const res = await api.get('/admin/aftersales');
+  return res.data.data as AfterSale[];
+};
+
+export interface User {
+  id: number;
+  phone: string;
+  name: string;
+  createdAt: string;
+}
+
+export const getUsers = async () => {
+  const res = await api.get('/admin/users');
+  return res.data.data as User[];
+};

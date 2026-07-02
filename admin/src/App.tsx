@@ -1,7 +1,32 @@
 import { useState } from 'react';
-import { Layout, Menu, Table, Tag, Button, Modal, Select, message, Timeline } from 'antd';
-import { ShoppingCartOutlined, UserOutlined, SendOutlined, HistoryOutlined } from '@ant-design/icons';
-import { Order, Provider, OrderStatusLog, getOrders, getProviders, autoDispatch, manualDispatch, getOrderLogs } from './api';
+import { Layout, Menu, Table, Tag, Button, Modal, Select, message, Timeline, Card, Row, Col } from 'antd';
+import { 
+  ShoppingCartOutlined, 
+  UserOutlined, 
+  SendOutlined, 
+  HistoryOutlined,
+  DashboardOutlined,
+  WalletOutlined,
+  FileTextOutlined
+} from '@ant-design/icons';
+import { 
+  Order, 
+  Provider, 
+  OrderStatusLog, 
+  Stats,
+  Payment,
+  AfterSale,
+  User,
+  getOrders, 
+  getProviders, 
+  autoDispatch, 
+  manualDispatch, 
+  getOrderLogs,
+  getStats,
+  getPayments,
+  getAfterSales,
+  getUsers
+} from './api';
 
 const { Header, Content, Sider } = Layout;
 
@@ -11,6 +36,20 @@ const statusMap: Record<string, { color: string; label: string }> = {
   accepted: { color: 'green', label: '已接单' },
   doing: { color: 'cyan', label: '服务中' },
   completed: { color: 'gray', label: '已完成' },
+};
+
+const paymentStatusMap: Record<string, { color: string; label: string }> = {
+  pending: { color: 'orange', label: '待支付' },
+  paid: { color: 'blue', label: '已支付' },
+  settled: { color: 'green', label: '已结算' },
+  refunded: { color: 'red', label: '已退款' },
+};
+
+const afterSaleStatusMap: Record<string, { color: string; label: string }> = {
+  pending: { color: 'orange', label: '待处理' },
+  processing: { color: 'blue', label: '处理中' },
+  resolved: { color: 'green', label: '已解决' },
+  rejected: { color: 'red', label: '已拒绝' },
 };
 
 const orderColumns = [
@@ -68,6 +107,65 @@ const providerColumns = [
   { title: '姓名', dataIndex: 'name', key: 'name' },
   { title: '手机号', dataIndex: 'phone', key: 'phone' },
   { title: '评分', dataIndex: 'rating', key: 'rating' },
+  { title: '余额', dataIndex: 'balance', key: 'balance', render: (b: number) => `¥${b}` },
+  { 
+    title: '注册时间', 
+    dataIndex: 'createdAt', 
+    key: 'createdAt',
+    render: (date: string) => new Date(date).toLocaleString('zh-CN')
+  },
+];
+
+const paymentColumns = [
+  { title: 'ID', dataIndex: 'id', key: 'id' },
+  { title: '订单号', dataIndex: 'orderId', key: 'orderId', render: (id: number) => `#${id}` },
+  { title: '订单类目', dataIndex: 'order', key: 'orderCategory', render: (o: Order | undefined) => o?.category || '-' },
+  { title: '金额', dataIndex: 'amount', key: 'amount', render: (a: number) => `¥${a}` },
+  { title: '平台抽成', dataIndex: 'platformFee', key: 'platformFee', render: (f: number) => `¥${f}` },
+  { title: '师傅收入', dataIndex: 'providerIncome', key: 'providerIncome', render: (i: number) => `¥${i}` },
+  { 
+    title: '状态', 
+    dataIndex: 'status', 
+    key: 'status', 
+    render: (status: string) => {
+      const info = paymentStatusMap[status] || { color: 'gray', label: status };
+      return <Tag color={info.color}>{info.label}</Tag>;
+    }
+  },
+  { 
+    title: '创建时间', 
+    dataIndex: 'createdAt', 
+    key: 'createdAt',
+    render: (date: string) => new Date(date).toLocaleString('zh-CN')
+  },
+];
+
+const afterSaleColumns = [
+  { title: 'ID', dataIndex: 'id', key: 'id' },
+  { title: '订单号', dataIndex: 'orderId', key: 'orderId', render: (id: number) => `#${id}` },
+  { title: '订单类目', dataIndex: 'order', key: 'orderCategory', render: (o: Order | undefined) => o?.category || '-' },
+  { title: '售后原因', dataIndex: 'reason', key: 'reason', ellipsis: true },
+  { 
+    title: '状态', 
+    dataIndex: 'status', 
+    key: 'status', 
+    render: (status: string) => {
+      const info = afterSaleStatusMap[status] || { color: 'gray', label: status };
+      return <Tag color={info.color}>{info.label}</Tag>;
+    }
+  },
+  { 
+    title: '创建时间', 
+    dataIndex: 'createdAt', 
+    key: 'createdAt',
+    render: (date: string) => new Date(date).toLocaleString('zh-CN')
+  },
+];
+
+const userColumns = [
+  { title: 'ID', dataIndex: 'id', key: 'id' },
+  { title: '手机号', dataIndex: 'phone', key: 'phone' },
+  { title: '姓名', dataIndex: 'name', key: 'name' },
   { 
     title: '注册时间', 
     dataIndex: 'createdAt', 
@@ -177,6 +275,61 @@ const handleManualDispatch = async (orderId: number, providerId: number) => {
   }
 };
 
+function DashboardPage() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const data = await getStats();
+      setStats(data);
+    } catch (e) {
+      message.error('获取统计数据失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useState(() => {
+    fetchData();
+    window.addEventListener('refresh', fetchData);
+    return () => window.removeEventListener('refresh', fetchData);
+  });
+
+  const cardData = [
+    { key: 'todayOrders', label: '今日订单', value: stats?.todayOrders || 0, color: '#1677ff' },
+    { key: 'todayRevenue', label: '今日成交金额', value: `¥${stats?.todayRevenue || 0}`, color: '#10b981' },
+    { key: 'pendingOrders', label: '待处理订单', value: stats?.pendingOrders || 0, color: '#f59e0b' },
+    { key: 'onlineProviders', label: '在线师傅', value: stats?.onlineProviders || 0, color: '#06b6d4' },
+    { key: 'completedOrders', label: '已完成订单', value: stats?.completedOrders || 0, color: '#6b7280' },
+  ];
+
+  return (
+    <div>
+      <h2 style={{ marginBottom: 20 }}>控制台</h2>
+      <Row gutter={[16, 16]}>
+        {cardData.map((item) => (
+          <Col span={6} key={item.key}>
+            <Card 
+              loading={loading}
+              hoverable
+              style={{ borderRadius: '8px' }}
+            >
+              <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
+                {item.label}
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: item.color }}>
+                {item.value}
+              </div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </div>
+  );
+}
+
 function OrderPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
@@ -243,8 +396,129 @@ function ProviderPage() {
   );
 }
 
+function UserPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useState(async () => {
+    setLoading(true);
+    try {
+      const data = await getUsers();
+      setUsers(data);
+    } catch (e) {
+      message.error('获取用户列表失败');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  return (
+    <div>
+      <h2 style={{ marginBottom: 20 }}>用户管理</h2>
+      <Table
+        columns={userColumns}
+        dataSource={users}
+        rowKey="id"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+      />
+    </div>
+  );
+}
+
+function FinancePage() {
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useState(async () => {
+    setLoading(true);
+    try {
+      const data = await getPayments();
+      setPayments(data);
+    } catch (e) {
+      message.error('获取支付记录失败');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  return (
+    <div>
+      <h2 style={{ marginBottom: 20 }}>财务系统</h2>
+      <h3 style={{ marginBottom: 16 }}>支付记录</h3>
+      <Table
+        columns={paymentColumns}
+        dataSource={payments}
+        rowKey="id"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+      />
+    </div>
+  );
+}
+
+function AfterSalePage() {
+  const [afterSales, setAfterSales] = useState<AfterSale[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useState(async () => {
+    setLoading(true);
+    try {
+      const data = await getAfterSales();
+      setAfterSales(data);
+    } catch (e) {
+      message.error('获取售后记录失败');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  return (
+    <div>
+      <h2 style={{ marginBottom: 20 }}>售后管理</h2>
+      <Table
+        columns={afterSaleColumns}
+        dataSource={afterSales}
+        rowKey="id"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+      />
+    </div>
+  );
+}
+
+const menuItems = [
+  { key: 'dashboard', icon: <DashboardOutlined />, label: '控制台', title: '控制台' },
+  { key: 'orders', icon: <ShoppingCartOutlined />, label: '订单管理', title: '订单管理' },
+  { key: 'users', icon: <UserOutlined />, label: '用户管理', title: '用户管理' },
+  { key: 'providers', icon: <FileTextOutlined />, label: '师傅管理', title: '师傅管理' },
+  { key: 'finance', icon: <WalletOutlined />, label: '财务系统', title: '财务系统' },
+  { key: 'aftersale', icon: <FileTextOutlined />, label: '售后管理', title: '售后管理' },
+];
+
+const renderPage = (key: string) => {
+  switch (key) {
+    case 'dashboard':
+      return <DashboardPage />;
+    case 'orders':
+      return <OrderPage />;
+    case 'users':
+      return <UserPage />;
+    case 'providers':
+      return <ProviderPage />;
+    case 'finance':
+      return <FinancePage />;
+    case 'aftersale':
+      return <AfterSalePage />;
+    default:
+      return <DashboardPage />;
+  }
+};
+
 export default function App() {
-  const [selectedKey, setSelectedKey] = useState('orders');
+  const [selectedKey, setSelectedKey] = useState('dashboard');
+
+  const currentItem = menuItems.find(item => item.key === selectedKey);
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -255,21 +529,18 @@ export default function App() {
         <Menu
           mode="inline"
           selectedKeys={[selectedKey]}
-          items={[
-            { key: 'orders', icon: <ShoppingCartOutlined />, label: '订单管理' },
-            { key: 'providers', icon: <UserOutlined />, label: '师傅管理' },
-          ]}
+          items={menuItems}
           onClick={({ key }) => setSelectedKey(key)}
         />
       </Sider>
       <Layout>
         <Header style={{ background: '#fff', padding: '0 24px', display: 'flex', alignItems: 'center', borderBottom: '1px solid #f0f0f0' }}>
           <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
-            {selectedKey === 'orders' ? '订单管理' : '师傅管理'}
+            {currentItem?.title || '控制台'}
           </span>
         </Header>
         <Content style={{ padding: '24px', background: '#f5f5f5' }}>
-          {selectedKey === 'orders' ? <OrderPage /> : <ProviderPage />}
+          {renderPage(selectedKey)}
         </Content>
       </Layout>
     </Layout>

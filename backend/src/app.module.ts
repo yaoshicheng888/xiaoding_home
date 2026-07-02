@@ -15,6 +15,8 @@ import { ProviderModule } from './modules/provider/provider.module';
 import { OrderModule } from './modules/order/order.module';
 import { DispatchModule } from './modules/dispatch/dispatch.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { AfterSaleModule } from './modules/aftersale/aftersale.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { AdminModule } from './modules/admin/admin.module';
     DispatchModule,
     ProviderModule,
     AdminModule,
+    PaymentModule,
+    AfterSaleModule,
   ],
   controllers: [AppController],
   providers: [
