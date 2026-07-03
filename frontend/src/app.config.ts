@@ -11,8 +11,8 @@ export default {
     navigationBarTitleText: "小钉到家"
   },
   tabBar: {
-    color: "#999999",
-    selectedColor: "#1677ff",
+    color: "#94A3B8",
+    selectedColor: "#2563EB",
     borderStyle: "black",
     backgroundColor: "#ffffff",
     list: [
