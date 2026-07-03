@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { getOrderDetail, startService, completeOrder } from "../../api";
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  created: { label: "待接单", color: "#f59e0b" },
-  assigned: { label: "已派单", color: "#3b82f6" },
-  accepted: { label: "已接单", color: "#10b981" },
-  doing: { label: "服务中", color: "#06b6d4" },
-  completed: { label: "已完成", color: "#6b7280" }
+  created: { label: "待接单", color: "#F59E0B" },
+  assigned: { label: "已派单", color: "#2563EB" },
+  accepted: { label: "已接单", color: "#22C55E" },
+  doing: { label: "服务中", color: "#06B6D4" },
+  completed: { label: "已完成", color: "#64748B" }
 };
 
 export default function Detail({ orderId, onBack }: { orderId: number; onBack: () => void }) {
@@ -52,109 +52,136 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
     }
   };
 
-  const status = order ? (STATUS_MAP[order.status] || { label: order.status, color: "#666" }) : { label: "未知", color: "#666" };
+  const status = order ? (STATUS_MAP[order.status] || { label: order.status, color: "#64748B" }) : { label: "未知", color: "#64748B" };
 
   if (!order) {
     return (
-      <div style={{ padding: 20, textAlign: "center" }}>
-        <p>加载中...</p>
-        <button onClick={onBack}>返回</button>
+      <div style={{ padding: 20, textAlign: "center", minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
+        <p style={{ color: "#94A3B8" }}>加载中...</p>
+        <button
+          style={{
+            marginTop: 16,
+            padding: "8px 20px",
+            borderRadius: 8,
+            backgroundColor: "#2563EB",
+            color: "#FFFFFF",
+            border: "none",
+            cursor: "pointer"
+          }}
+          onClick={onBack}
+        >
+          返回
+        </button>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 480, margin: "0 auto", paddingBottom: 80 }}>
+    <div style={{ maxWidth: 480, margin: "0 auto", paddingBottom: 100, minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
       <div style={{
         padding: "16px 20px",
-        backgroundColor: "#fff",
-        borderBottom: "1px solid #f0f0f0",
+        backgroundColor: "#FFFFFF",
+        borderBottom: "1px solid #E2E8F0",
         display: "flex",
-        alignItems: "center"
+        alignItems: "center",
+        position: "sticky",
+        top: 0,
+        zIndex: 100
       }}>
         <span
-          style={{ color: "#1677ff", cursor: "pointer", marginRight: 16 }}
+          style={{ color: "#2563EB", cursor: "pointer", marginRight: 16, fontSize: 16, fontWeight: 500 }}
           onClick={onBack}
         >
           ← 返回
         </span>
-        <span style={{ fontSize: 16, fontWeight: "bold" }}>订单详情</span>
+        <span style={{ fontSize: 18, fontWeight: 600, color: "#1E293B" }}>订单详情</span>
       </div>
 
-      <div style={{ padding: 12 }}>
+      <div style={{ padding: 16 }}>
         <div style={{
-          backgroundColor: "#fff",
-          borderRadius: 8,
+          backgroundColor: "#FFFFFF",
+          borderRadius: 16,
           padding: 20,
-          marginBottom: 12
+          marginBottom: 16,
+          boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-            <span style={{ fontSize: 18, fontWeight: "bold" }}>{order.category}</span>
+            <span style={{ fontSize: 18, fontWeight: 600, color: "#1E293B" }}>{order.category}</span>
             <span style={{
               color: status.color,
-              fontWeight: "bold",
-              fontSize: 16
+              fontWeight: 600,
+              fontSize: 16,
+              padding: "4px 12px",
+              borderRadius: 6,
+              backgroundColor: status.color === "#F59E0B" ? "#FEF3C7" : status.color === "#2563EB" ? "#EFF6FF" : status.color === "#22C55E" ? "#ECFDF5" : status.color === "#06B6D4" ? "#ECFEFF" : "#F1F5F9"
             }}>
               {status.label}
             </span>
           </div>
-          <p style={{ color: "#666", fontSize: 14, margin: "0 0 8px 0" }}>
+          <p style={{ color: "#475569", fontSize: 14, margin: "0 0 12px 0" }}>
             {order.description}
           </p>
-          <p style={{ color: "#ff4d4f", fontSize: 22, fontWeight: "bold", margin: "12px 0 0 0" }}>
+          <p style={{ color: "#22C55E", fontSize: 24, fontWeight: 700, margin: "0" }}>
             ¥{order.price}
           </p>
         </div>
 
         {order.user && (
           <div style={{
-            backgroundColor: "#fff",
-            borderRadius: 8,
+            backgroundColor: "#FFFFFF",
+            borderRadius: 16,
             padding: 20,
-            marginBottom: 12
+            marginBottom: 16,
+            boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
           }}>
-            <h3 style={{ fontSize: 16, margin: "0 0 12px 0" }}>客户信息</h3>
-            <p style={{ color: "#333", margin: "0 0 8px 0" }}>
-              姓名：{order.user.name || "-"}
-            </p>
-            <p style={{ color: "#333", margin: "0 0 8px 0" }}>
-              电话：{order.user.phone || "-"}
-            </p>
-            <p style={{ color: "#333", margin: 0 }}>
-              城市：{order.user.city || "-"}
-            </p>
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1E293B", margin: "0 0 16px 0" }}>客户信息</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+                姓名：{order.user.name || "-"}
+              </p>
+              <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+                电话：{order.user.phone || "-"}
+              </p>
+              <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+                城市：{order.user.city || "-"}
+              </p>
+            </div>
           </div>
         )}
 
         <div style={{
-          backgroundColor: "#fff",
-          borderRadius: 8,
-          padding: 20
+          backgroundColor: "#FFFFFF",
+          borderRadius: 16,
+          padding: 20,
+          marginBottom: 16,
+          boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
         }}>
-          <h3 style={{ fontSize: 16, margin: "0 0 12px 0" }}>订单信息</h3>
-          <p style={{ color: "#666", fontSize: 14, margin: "0 0 8px 0" }}>
-            订单号：#{order.id}
-          </p>
-          <p style={{ color: "#666", fontSize: 14, margin: 0 }}>
-            创建时间：{order.createdAt ? new Date(order.createdAt).toLocaleString() : "-"}
-          </p>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1E293B", margin: "0 0 16px 0" }}>订单信息</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+              订单号：#{order.id}
+            </p>
+            <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+              创建时间：{order.createdAt ? new Date(order.createdAt).toLocaleString() : "-"}
+            </p>
+          </div>
         </div>
 
         {order.status === "doing" && (
           <div style={{
-            backgroundColor: "#fff",
-            borderRadius: 8,
+            backgroundColor: "#FFFFFF",
+            borderRadius: 16,
             padding: 20,
-            marginTop: 12
+            boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
           }}>
-            <h3 style={{ fontSize: 16, margin: "0 0 12px 0" }}>上传凭证</h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1E293B", margin: "0 0 16px 0" }}>上传凭证</h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
               {uploadedImages.map((img, idx) => (
                 <div key={idx} style={{
                   width: 80,
                   height: 80,
-                  borderRadius: 8,
-                  border: "1px solid #e5e7eb",
+                  borderRadius: 12,
+                  border: "1px solid #E2E8F0",
                   overflow: "hidden",
                   position: "relative"
                 }}>
@@ -163,17 +190,17 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
                     onClick={() => setUploadedImages(uploadedImages.filter((_, i) => i !== idx))}
                     style={{
                       position: "absolute",
-                      top: 2,
+                      top: 4,
                       right: 4,
-                      color: "#ef4444",
+                      color: "#EF4444",
                       cursor: "pointer",
-                      fontSize: 14,
-                      fontWeight: "bold",
-                      background: "rgba(255,255,255,0.7)",
+                      fontSize: 16,
+                      fontWeight: 600,
+                      background: "rgba(255,255,255,0.9)",
                       borderRadius: "50%",
-                      width: 18,
-                      height: 18,
-                      lineHeight: "18px",
+                      width: 20,
+                      height: 20,
+                      lineHeight: "20px",
                       textAlign: "center"
                     }}
                   >
@@ -184,14 +211,15 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
               <label style={{
                 width: 80,
                 height: 80,
-                borderRadius: 8,
-                border: "1px dashed #d1d5db",
+                borderRadius: 12,
+                border: "2px dashed #CBD5E1",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
-                color: "#999",
-                fontSize: 28
+                color: "#94A3B8",
+                fontSize: 28,
+                transition: "border-color 150ms"
               }}>
                 +
                 <input
@@ -215,20 +243,22 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
               </label>
             </div>
             <div>
-              <div style={{ fontSize: 14, color: "#666", marginBottom: 6 }}>文字说明</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "#475569", marginBottom: 8 }}>文字说明</div>
               <textarea
                 value={remark}
                 onChange={(e) => setRemark(e.target.value)}
                 placeholder="请输入服务说明..."
                 style={{
                   width: "100%",
-                  minHeight: 80,
-                  borderRadius: 8,
-                  border: "1px solid #d1d5db",
-                  padding: 10,
+                  minHeight: 100,
+                  borderRadius: 12,
+                  border: "1px solid #E2E8F0",
+                  padding: 12,
                   fontSize: 14,
                   resize: "vertical",
-                  boxSizing: "border-box"
+                  boxSizing: "border-box",
+                  backgroundColor: "#FAFAFA",
+                  color: "#1E293B"
                 }}
               />
             </div>
@@ -241,24 +271,25 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: "#fff",
-        padding: "12px 20px",
-        borderTop: "1px solid #f0f0f0",
-        display: "flex",
-        gap: 12
+        backgroundColor: "#FFFFFF",
+        padding: "16px 20px",
+        borderTop: "1px solid #E2E8F0",
+        boxShadow: "0 -2px 10px rgba(15,23,42,0.05)"
       }}>
-        <div style={{ maxWidth: 480, margin: "0 auto", width: "100%", display: "flex", gap: 12 }}>
+        <div style={{ maxWidth: 480, margin: "0 auto", width: "100%" }}>
           {order.status === "accepted" && (
             <button
               style={{
-                flex: 1,
-                height: 48,
-                borderRadius: 8,
-                backgroundColor: "#10b981",
-                color: "#fff",
-                fontSize: 16,
+                width: "100%",
+                height: 52,
+                borderRadius: 14,
+                backgroundColor: "#22C55E",
+                color: "#FFFFFF",
+                fontSize: 18,
+                fontWeight: 600,
                 border: "none",
-                cursor: "pointer"
+                cursor: "pointer",
+                transition: "background-color 150ms"
               }}
               onClick={handleStart}
             >
@@ -268,14 +299,16 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
           {order.status === "doing" && (
             <button
               style={{
-                flex: 1,
-                height: 48,
-                borderRadius: 8,
-                backgroundColor: "#f59e0b",
-                color: "#fff",
-                fontSize: 16,
+                width: "100%",
+                height: 52,
+                borderRadius: 14,
+                backgroundColor: "#F59E0B",
+                color: "#FFFFFF",
+                fontSize: 18,
+                fontWeight: 600,
                 border: "none",
-                cursor: "pointer"
+                cursor: "pointer",
+                transition: "background-color 150ms"
               }}
               onClick={handleComplete}
             >
@@ -285,12 +318,13 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
           {order.status === "completed" && (
             <button
               style={{
-                flex: 1,
-                height: 48,
-                borderRadius: 8,
-                backgroundColor: "#6b7280",
-                color: "#fff",
-                fontSize: 16,
+                width: "100%",
+                height: 52,
+                borderRadius: 14,
+                backgroundColor: "#E2E8F0",
+                color: "#94A3B8",
+                fontSize: 18,
+                fontWeight: 600,
                 border: "none",
                 cursor: "default"
               }}

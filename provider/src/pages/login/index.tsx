@@ -28,22 +28,26 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
       maxWidth: 480,
       margin: "0 auto",
       padding: 40,
-      paddingTop: 80
+      paddingTop: 100,
+      minHeight: "100vh",
+      backgroundColor: "#F8FAFC"
     }}>
-      <div style={{ textAlign: "center", marginBottom: 40 }}>
-        <h1 style={{ fontSize: 28, color: "#1677ff", margin: 0 }}>师傅端</h1>
-        <p style={{ fontSize: 14, color: "#999", marginTop: 8 }}>小钉到家师傅接单系统</p>
+      <div style={{ textAlign: "center", marginBottom: 56 }}>
+        <h1 style={{ fontSize: 32, color: "#2563EB", margin: 0, fontWeight: 700 }}>师傅端</h1>
+        <p style={{ fontSize: 14, color: "#64748B", marginTop: 8 }}>小钉到家师傅接单系统</p>
       </div>
       <input
         style={{
           width: "100%",
-          height: 48,
-          border: "1px solid #ddd",
-          borderRadius: 8,
-          paddingLeft: 16,
+          height: 52,
+          border: "1px solid #E2E8F0",
+          borderRadius: 12,
+          paddingLeft: 20,
           fontSize: 16,
-          marginBottom: 20,
-          boxSizing: "border-box"
+          marginBottom: 24,
+          boxSizing: "border-box",
+          backgroundColor: "#FFFFFF",
+          color: "#1E293B"
         }}
         placeholder="请输入手机号"
         type="tel"
@@ -54,21 +58,23 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
       <button
         style={{
           width: "100%",
-          height: 48,
-          borderRadius: 8,
-          backgroundColor: "#1677ff",
-          color: "#fff",
+          height: 52,
+          borderRadius: 14,
+          backgroundColor: "#2563EB",
+          color: "#FFFFFF",
           fontSize: 18,
+          fontWeight: 600,
           border: "none",
           cursor: loading ? "not-allowed" : "pointer",
-          opacity: loading ? 0.6 : 1
+          opacity: loading ? 0.6 : 1,
+          transition: "opacity 150ms"
         }}
         onClick={login}
         disabled={loading}
       >
         {loading ? "登录中..." : "登录"}
       </button>
-      <p style={{ textAlign: "center", fontSize: 12, color: "#999", marginTop: 16 }}>
+      <p style={{ textAlign: "center", fontSize: 12, color: "#94A3B8", marginTop: 20 }}>
         输入手机号即可登录
       </p>
     </div>

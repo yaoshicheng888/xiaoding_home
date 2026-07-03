@@ -42,7 +42,7 @@ function App() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
       {page === "login" && <Login onLogin={handleLogin} />}
       {page === "home" && <Home onNavigate={handleNavigate} />}
       {page === "orders" && <Orders onDetail={handleDetail} onBack={handleBackToHome} />}

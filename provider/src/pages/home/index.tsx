@@ -6,9 +6,9 @@ interface HomeProps {
 }
 
 const STATUS_MAP = {
-  online: { label: "在线", color: "#10b981", bg: "#ecfdf5" },
-  offline: { label: "离线", color: "#6b7280", bg: "#f3f4f6" },
-  busy: { label: "忙碌", color: "#f59e0b", bg: "#fffbeb" }
+  online: { label: "在线", color: "#22C55E", bg: "#ECFDF5" },
+  offline: { label: "离线", color: "#64748B", bg: "#F1F5F9" },
+  busy: { label: "忙碌", color: "#F59E0B", bg: "#FEF3C7" }
 };
 
 export default function Home({ onNavigate }: HomeProps) {
@@ -42,35 +42,36 @@ export default function Home({ onNavigate }: HomeProps) {
 
   if (loading) {
     return (
-      <div style={{ padding: "20px", textAlign: "center" }}>
-        <div>加载中...</div>
+      <div style={{ padding: "16px", textAlign: "center", minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
+        <div style={{ color: "#64748B" }}>加载中...</div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-      <div style={{ backgroundColor: "#1677ff", padding: "20px", paddingTop: "40px" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
+      <div style={{ backgroundColor: "#2563EB", padding: "20px", paddingTop: "56px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <div style={{ fontSize: "20px", color: "#fff", fontWeight: "bold", marginBottom: "8px" }}>
+            <div style={{ fontSize: "22px", color: "#FFFFFF", fontWeight: 600, marginBottom: "8px" }}>
               小钉到家 - 师傅端
             </div>
-            <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.8)" }}>
+            <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.85)" }}>
               欢迎回来，师傅
             </div>
           </div>
           <div
             onClick={() => setOnline(!online)}
             style={{
-              padding: "8px 16px",
+              padding: "8px 20px",
               borderRadius: "20px",
               backgroundColor: STATUS_MAP[online ? "online" : "offline"].bg,
               color: STATUS_MAP[online ? "online" : "offline"].color,
               fontSize: "14px",
-              fontWeight: "bold",
+              fontWeight: 600,
               cursor: "pointer",
-              userSelect: "none"
+              userSelect: "none",
+              transition: "all 150ms"
             }}
           >
             {STATUS_MAP[online ? "online" : "offline"].label}
@@ -78,7 +79,7 @@ export default function Home({ onNavigate }: HomeProps) {
         </div>
       </div>
 
-      <div style={{ padding: "20px" }}>
+      <div style={{ padding: "16px" }}>
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",
@@ -86,113 +87,113 @@ export default function Home({ onNavigate }: HomeProps) {
           marginBottom: "20px"
         }}>
           <div style={{
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-            padding: "16px",
+            backgroundColor: "#FFFFFF",
+            borderRadius: "16px",
+            padding: "20px",
             textAlign: "center",
-            border: "1px solid #f0f0f0"
+            boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
           }}>
-            <div style={{ fontSize: "28px", fontWeight: "bold", color: "#1677ff" }}>
+            <div style={{ fontSize: "32px", fontWeight: 700, color: "#2563EB" }}>
               {stats.todayOrders}
             </div>
-            <div style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>今日接单</div>
+            <div style={{ fontSize: "12px", color: "#64748B", marginTop: "8px" }}>今日接单</div>
           </div>
           <div style={{
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-            padding: "16px",
+            backgroundColor: "#FFFFFF",
+            borderRadius: "16px",
+            padding: "20px",
             textAlign: "center",
-            border: "1px solid #f0f0f0"
+            boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
           }}>
-            <div style={{ fontSize: "28px", fontWeight: "bold", color: "#10b981" }}>
+            <div style={{ fontSize: "32px", fontWeight: 700, color: "#22C55E" }}>
               ¥{stats.todayIncome.toFixed(2)}
             </div>
-            <div style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>今日收入</div>
+            <div style={{ fontSize: "12px", color: "#64748B", marginTop: "8px" }}>今日收入</div>
           </div>
           <div style={{
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-            padding: "16px",
+            backgroundColor: "#FFFFFF",
+            borderRadius: "16px",
+            padding: "20px",
             textAlign: "center",
-            border: "1px solid #f0f0f0"
+            boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
           }}>
-            <div style={{ fontSize: "28px", fontWeight: "bold", color: "#f59e0b" }}>
+            <div style={{ fontSize: "32px", fontWeight: 700, color: "#F59E0B" }}>
               {stats.pendingOrders}
             </div>
-            <div style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>待完成</div>
+            <div style={{ fontSize: "12px", color: "#64748B", marginTop: "8px" }}>待完成</div>
           </div>
         </div>
 
         <div style={{
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          padding: "16px",
+          backgroundColor: "#FFFFFF",
+          borderRadius: "16px",
+          padding: "20px",
           marginBottom: "20px",
-          border: "1px solid #f0f0f0"
+          boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
         }}>
-          <div style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "16px" }}>快捷入口</div>
+          <div style={{ fontSize: "18px", fontWeight: 600, color: "#1E293B", marginBottom: "16px" }}>快捷入口</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
             <div
               onClick={() => onNavigate("orders")}
               style={{
-                padding: "20px",
+                padding: "24px",
                 textAlign: "center",
-                backgroundColor: "#f0f9ff",
-                borderRadius: "8px",
+                backgroundColor: "#EFF6FF",
+                borderRadius: "12px",
                 cursor: "pointer"
               }}
             >
-              <div style={{ fontSize: "32px", marginBottom: "8px" }}>📋</div>
-              <div style={{ fontSize: "14px" }}>订单大厅</div>
+              <div style={{ fontSize: "36px", marginBottom: "10px" }}>📋</div>
+              <div style={{ fontSize: "14px", color: "#1E293B", fontWeight: 500 }}>订单大厅</div>
             </div>
             <div
               onClick={() => onNavigate("my-orders")}
               style={{
-                padding: "20px",
+                padding: "24px",
                 textAlign: "center",
-                backgroundColor: "#ecfdf5",
-                borderRadius: "8px",
+                backgroundColor: "#ECFDF5",
+                borderRadius: "12px",
                 cursor: "pointer"
               }}
             >
-              <div style={{ fontSize: "32px", marginBottom: "8px" }}>✅</div>
-              <div style={{ fontSize: "14px" }}>我的订单</div>
+              <div style={{ fontSize: "36px", marginBottom: "10px" }}>✅</div>
+              <div style={{ fontSize: "14px", color: "#1E293B", fontWeight: 500 }}>我的订单</div>
             </div>
             <div
               onClick={() => onNavigate("income")}
               style={{
-                padding: "20px",
+                padding: "24px",
                 textAlign: "center",
-                backgroundColor: "#fffbeb",
-                borderRadius: "8px",
+                backgroundColor: "#FEF3C7",
+                borderRadius: "12px",
                 cursor: "pointer"
               }}
             >
-              <div style={{ fontSize: "32px", marginBottom: "8px" }}>💰</div>
-              <div style={{ fontSize: "14px" }}>收入记录</div>
+              <div style={{ fontSize: "36px", marginBottom: "10px" }}>💰</div>
+              <div style={{ fontSize: "14px", color: "#1E293B", fontWeight: 500 }}>收入记录</div>
             </div>
           </div>
         </div>
 
         <div style={{
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          padding: "16px",
-          border: "1px solid #f0f0f0"
+          backgroundColor: "#FFFFFF",
+          borderRadius: "16px",
+          padding: "20px",
+          boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
         }}>
-          <div style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "16px" }}>收入概览</div>
+          <div style={{ fontSize: "18px", fontWeight: 600, color: "#1E293B", marginBottom: "16px" }}>收入概览</div>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#666" }}>累计收入</span>
-              <span style={{ fontSize: "16px", fontWeight: "bold" }}>¥{income.totalIncome.toFixed(2)}</span>
+              <span style={{ color: "#64748B" }}>累计收入</span>
+              <span style={{ fontSize: "16px", fontWeight: 600, color: "#1E293B" }}>¥{income.totalIncome.toFixed(2)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#666" }}>可提现余额</span>
-              <span style={{ fontSize: "16px", fontWeight: "bold", color: "#10b981" }}>¥{income.balance.toFixed(2)}</span>
+              <span style={{ color: "#64748B" }}>可提现余额</span>
+              <span style={{ fontSize: "18px", fontWeight: 700, color: "#22C55E" }}>¥{income.balance.toFixed(2)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#666" }}>待结算金额</span>
-              <span style={{ fontSize: "16px", fontWeight: "bold", color: "#f59e0b" }}>¥{income.pendingIncome.toFixed(2)}</span>
+              <span style={{ color: "#64748B" }}>待结算金额</span>
+              <span style={{ fontSize: "16px", fontWeight: 600, color: "#F59E0B" }}>¥{income.pendingIncome.toFixed(2)}</span>
             </div>
           </div>
         </div>

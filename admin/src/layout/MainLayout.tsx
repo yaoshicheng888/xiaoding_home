@@ -30,30 +30,34 @@ export default function MainLayout() {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider width={200} theme="light">
-        <div style={{ padding: "16px", fontSize: "20px", fontWeight: "bold", textAlign: "center" }}>
-          小钉到家管理后台
+      <Sider width={240} theme="light" style={{ background: "#FFFFFF", borderRight: "1px solid #E2E8F0" }}>
+        <div style={{ padding: "20px 24px", fontSize: "20px", fontWeight: 600, textAlign: "left", color: "#2563EB" }}>
+          小钉到家
         </div>
         <Menu
           mode="inline"
           selectedKeys={[currentItem?.key || "/dashboard"]}
           items={menuItems}
           onClick={({ key }) => navigate(key)}
+          style={{ border: "none" }}
+          theme="light"
+          defaultOpenKeys={["/dashboard"]}
         />
       </Sider>
       <Layout>
         <Header
           style={{
-            background: "#fff",
-            padding: "0 24px",
+            background: "#FFFFFF",
+            padding: "0 32px",
             display: "flex",
             alignItems: "center",
-            borderBottom: "1px solid #f0f0f0",
+            borderBottom: "1px solid #E2E8F0",
+            height: 64,
           }}
         >
-          <span style={{ fontSize: "18px", fontWeight: "bold" }}>{currentItem?.label || "控制台"}</span>
+          <span style={{ fontSize: "20px", fontWeight: 600, color: "#1E293B" }}>{currentItem?.label || "控制台"}</span>
         </Header>
-        <Content style={{ padding: "24px", background: "#f5f5f5" }}>
+        <Content style={{ padding: "32px", background: "#F8FAFC" }}>
           <Outlet />
         </Content>
       </Layout>

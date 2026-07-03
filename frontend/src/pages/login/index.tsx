@@ -25,25 +25,28 @@ export default function Login() {
   };
 
   return (
-    <View style={{ padding: 40, paddingTop: 80 }}>
-      <View style={{ textAlign: "center", marginBottom: 40 }}>
-        <Text style={{ fontSize: 28, fontWeight: "bold", color: "#1677ff" }}>
+    <View style={{ padding: 40, paddingTop: 100, minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
+      <View style={{ textAlign: "center", marginBottom: 56 }}>
+        <Text style={{ fontSize: 32, fontWeight: 700, color: "#2563EB" }}>
           小钉到家
         </Text>
-        <Text style={{ display: "block", fontSize: 14, color: "#999", marginTop: 8 }}>
+        <Text style={{ display: "block", fontSize: 14, color: "#64748B", marginTop: 8 }}>
           专业家政维修服务
         </Text>
       </View>
-      <View style={{ marginBottom: 20 }}>
+      <View style={{ marginBottom: 24 }}>
         <Input
           style={{
-            height: 48,
-            border: "1px solid #ddd",
-            borderRadius: 8,
-            paddingLeft: 16,
-            fontSize: 16
+            height: 52,
+            border: "1px solid #E2E8F0",
+            borderRadius: 12,
+            paddingLeft: 20,
+            fontSize: 16,
+            color: "#1E293B",
+            backgroundColor: "#FFFFFF"
           }}
           placeholder="请输入手机号"
+          placeholderStyle={{ color: "#94A3B8" }}
           type="number"
           maxlength={11}
           onInput={(e) => setPhone(e.detail.value)}
@@ -51,17 +54,18 @@ export default function Login() {
       </View>
       <Button
         style={{
-          height: 48,
-          borderRadius: 8,
-          backgroundColor: "#1677ff",
-          color: "#fff",
-          fontSize: 18
+          height: 52,
+          borderRadius: 14,
+          backgroundColor: "#2563EB",
+          color: "#FFFFFF",
+          fontSize: 18,
+          fontWeight: 600
         }}
         onClick={handleLogin}
       >
         登录
       </Button>
-      <Text style={{ display: "block", textAlign: "center", fontSize: 12, color: "#999", marginTop: 16 }}>
+      <Text style={{ display: "block", textAlign: "center", fontSize: 12, color: "#94A3B8", marginTop: 20 }}>
         输入手机号即可登录
       </Text>
     </View>

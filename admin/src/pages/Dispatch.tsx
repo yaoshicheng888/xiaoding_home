@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Button, message, Select } from "antd";
+import { Table, Button, message, Select, Card, Tag } from "antd";
 import { getOrders, getProviders, autoDispatch, manualDispatch, Order, Provider } from "../api";
 
 export default function Dispatch() {
@@ -43,22 +43,22 @@ export default function Dispatch() {
   }, []);
 
   const columns = [
-    { title: "订单ID", dataIndex: "id", key: "id", render: (id: number) => `#${id}` },
-    { title: "服务类目", dataIndex: "category", key: "category" },
-    { title: "问题描述", dataIndex: "description", key: "description", ellipsis: true },
-    { title: "金额", dataIndex: "price", key: "price", render: (price: number) => `¥${price}` },
-    { title: "创建时间", dataIndex: "createdAt", key: "createdAt", render: (date: string) => new Date(date).toLocaleString("zh-CN") },
+    { title: "订单ID", dataIndex: "id", key: "id", render: (id: number) => <span style={{ fontWeight: 600, color: "#2563EB" }}>#{id}</span> },
+    { title: "服务类目", dataIndex: "category", key: "category", render: (val: string) => <span style={{ color: "#1E293B", fontWeight: 500 }}>{val}</span> },
+    { title: "问题描述", dataIndex: "description", key: "description", ellipsis: true, render: (val: string) => <span style={{ color: "#475569" }}>{val}</span> },
+    { title: "金额", dataIndex: "price", key: "price", render: (price: number) => <span style={{ color: "#22C55E", fontWeight: 600, fontSize: 16 }}>¥{price}</span> },
+    { title: "创建时间", dataIndex: "createdAt", key: "createdAt", render: (date: string) => <span style={{ color: "#64748B", fontSize: 12 }}>{new Date(date).toLocaleString("zh-CN")}</span> },
     {
       title: "操作",
       key: "action",
       render: (_: unknown, record: Order) => (
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <Button type="primary" size="small" onClick={() => dispatch(record.id)}>
             自动派单
           </Button>
           <Select
             placeholder="选择师傅"
-            style={{ width: 180 }}
+            style={{ width: 200 }}
             size="small"
             options={providers.map((p) => ({ value: p.id, label: `${p.name} (${p.phone})` }))}
             onSelect={(providerId) => dispatch(record.id, providerId as number)}
@@ -70,11 +70,13 @@ export default function Dispatch() {
 
   return (
     <div>
-      <h2 style={{ marginBottom: 20 }}>派单中心</h2>
-      <p style={{ marginBottom: 16, color: "#999" }}>
-        以下为待派单订单（status=created），可自动或手动指派师傅
-      </p>
-      <Table columns={columns} dataSource={list} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />
+      <h2 style={{ marginBottom: 24, fontSize: 24, fontWeight: 600, color: "#1E293B" }}>派单中心</h2>
+      <div style={{ marginBottom: 20, padding: "16px 20px", backgroundColor: "#EFF6FF", borderRadius: 12, borderLeft: "4px solid #2563EB" }}>
+        <p style={{ color: "#1E3A8A", fontSize: 14 }}>以下为待派单订单（状态为待派单），可自动或手动指派师傅</p>
+      </div>
+      <Card style={{ borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,.05)" }}>
+        <Table columns={columns} dataSource={list} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />
+      </Card>
     </div>
   );
 }

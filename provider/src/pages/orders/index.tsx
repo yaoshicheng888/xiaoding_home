@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 import { getOrders, takeOrder } from "../../api";
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  created: { label: "待接单", color: "#f59e0b" },
-  assigned: { label: "已派单", color: "#3b82f6" },
-  accepted: { label: "已接单", color: "#10b981" },
-  doing: { label: "服务中", color: "#06b6d4" },
-  completed: { label: "已完成", color: "#6b7280" }
+  created: { label: "待接单", color: "#F59E0B" },
+  assigned: { label: "已派单", color: "#2563EB" },
+  accepted: { label: "已接单", color: "#22C55E" },
+  doing: { label: "服务中", color: "#06B6D4" },
+  completed: { label: "已完成", color: "#64748B" }
 };
 
 const URGENCY_MAP: Record<string, { label: string; color: string; bg: string }> = {
-  high: { label: "紧急", color: "#ef4444", bg: "#fef2f2" },
-  medium: { label: "较急", color: "#f97316", bg: "#fff7ed" },
-  low: { label: "普通", color: "#6b7280", bg: "#f3f4f6" }
+  high: { label: "紧急", color: "#EF4444", bg: "#FEF2F2" },
+  medium: { label: "较急", color: "#F97316", bg: "#FFF7ED" },
+  low: { label: "普通", color: "#64748B", bg: "#F1F5F9" }
 };
 
 export default function Orders({ onDetail, onBack }: { onDetail: (id: number) => void; onBack: () => void }) {
@@ -53,29 +53,32 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
   const displayList = list.filter(o => o.status === "created" || o.status === "assigned");
 
   return (
-    <div style={{ maxWidth: 480, margin: "0 auto" }}>
+    <div style={{ maxWidth: 480, margin: "0 auto", minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
       <div style={{
         padding: "16px 20px",
-        backgroundColor: "#fff",
-        borderBottom: "1px solid #f0f0f0",
+        backgroundColor: "#FFFFFF",
+        borderBottom: "1px solid #E2E8F0",
         display: "flex",
-        alignItems: "center"
+        alignItems: "center",
+        position: "sticky",
+        top: 0,
+        zIndex: 100
       }}>
         <span
-          style={{ color: "#1677ff", cursor: "pointer", marginRight: 16 }}
+          style={{ color: "#2563EB", cursor: "pointer", marginRight: 16, fontSize: 16, fontWeight: 500 }}
           onClick={onBack}
         >
           ← 返回
         </span>
-        <span style={{ fontSize: 16, fontWeight: "bold" }}>订单大厅</span>
+        <span style={{ fontSize: 18, fontWeight: 600, color: "#1E293B" }}>订单大厅</span>
       </div>
 
-      <div style={{ padding: 12 }}>
+      <div style={{ padding: 16 }}>
         {loading && list.length === 0 && (
-          <p style={{ textAlign: "center", color: "#999", padding: 40 }}>加载中...</p>
+          <p style={{ textAlign: "center", color: "#94A3B8", padding: 40 }}>加载中...</p>
         )}
         {!loading && displayList.length === 0 && (
-          <p style={{ textAlign: "center", color: "#999", padding: 40 }}>暂无待接订单</p>
+          <p style={{ textAlign: "center", color: "#94A3B8", padding: 40 }}>暂无待接订单</p>
         )}
         {displayList.map((item: any) => {
           const status = STATUS_MAP[item.status] || {};
@@ -85,58 +88,61 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
             <div
               key={item.id}
               style={{
-                backgroundColor: "#fff",
-                borderRadius: 8,
-                padding: 16,
-                marginBottom: 12
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                padding: 20,
+                marginBottom: 16,
+                boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={{ fontWeight: "bold", fontSize: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                <span style={{ fontWeight: 600, fontSize: 16, color: "#1E293B" }}>
                   {item.category}
                 </span>
-                <span style={{ color: status.color, fontWeight: "bold" }}>
+                <span style={{ color: status.color, fontWeight: 600, fontSize: 14 }}>
                   {status.label}
                 </span>
               </div>
-              <p style={{ color: "#666", fontSize: 14, margin: "0 0 8px 0" }}>
+              <p style={{ color: "#475569", fontSize: 14, margin: "0 0 12px 0" }}>
                 {item.description}
               </p>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
                 <span style={{
-                  padding: "2px 8px",
-                  borderRadius: 4,
+                  padding: "4px 10px",
+                  borderRadius: 6,
                   backgroundColor: urgency.bg,
                   color: urgency.color,
                   fontSize: 12,
-                  fontWeight: "bold"
+                  fontWeight: 600
                 }}>
                   {urgency.label}
                 </span>
-                <span style={{ color: "#999", fontSize: 12 }}>
+                <span style={{ color: "#64748B", fontSize: 12 }}>
                   📍 {distance}
                 </span>
               </div>
               {item.user && (
-                <p style={{ color: "#999", fontSize: 12, margin: "0 0 12px 0" }}>
+                <p style={{ color: "#64748B", fontSize: 12, margin: "0 0 16px 0" }}>
                   {item.user.name} · {item.user.phone} · {item.user.city}
                 </p>
               )}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "#ff4d4f", fontSize: 20, fontWeight: "bold" }}>
+                <span style={{ color: "#22C55E", fontSize: 22, fontWeight: 700 }}>
                   ¥{item.price}
                 </span>
                 {item.status === "created" || item.status === "assigned" ? (
                   <button
                     style={{
-                      height: 36,
-                      padding: "0 20px",
-                      borderRadius: 6,
-                      backgroundColor: "#1677ff",
-                      color: "#fff",
-                      fontSize: 14,
+                      height: 44,
+                      padding: "0 24px",
+                      borderRadius: 12,
+                      backgroundColor: "#2563EB",
+                      color: "#FFFFFF",
+                      fontSize: 16,
+                      fontWeight: 600,
                       border: "none",
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      transition: "background-color 150ms"
                     }}
                     onClick={() => take(item.id)}
                   >
@@ -145,12 +151,13 @@ export default function Orders({ onDetail, onBack }: { onDetail: (id: number) =>
                 ) : (
                   <button
                     style={{
-                      height: 36,
-                      padding: "0 20px",
-                      borderRadius: 6,
-                      backgroundColor: "#f0f0f0",
-                      color: "#333",
-                      fontSize: 14,
+                      height: 44,
+                      padding: "0 24px",
+                      borderRadius: 12,
+                      backgroundColor: "#F1F5F9",
+                      color: "#475569",
+                      fontSize: 16,
+                      fontWeight: 500,
                       border: "none",
                       cursor: "pointer"
                     }}
