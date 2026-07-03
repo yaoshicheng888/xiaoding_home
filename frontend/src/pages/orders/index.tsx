@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView } from "@tarojs/components";
 import Taro from "@tarojs/taro";
+import { ClipboardList, Clock } from "lucide-react";
 import { getOrderList } from "../../api";
+import { colors, font, spacing, shadows, radius } from "design-system";
 
 const STATUS_MAP = {
-  created: { label: "待接单", color: "#F59E0B" },
-  assigned: { label: "已派单", color: "#2563EB" },
-  accepted: { label: "已接单", color: "#22C55E" },
-  doing: { label: "服务中", color: "#06B6D4" },
-  completed: { label: "已完成", color: "#64748B" }
+  created: { label: "待接单", color: colors.warning },
+  assigned: { label: "已派单", color: colors.primary[500] },
+  accepted: { label: "已接单", color: colors.success },
+  doing: { label: "服务中", color: colors.info },
+  completed: { label: "已完成", color: colors.gray[500] }
 };
 
 const formatDate = (dateStr: string) => {
@@ -53,58 +55,62 @@ export default function OrderListPage() {
 
   if (loading) {
     return (
-      <View style={{ padding: 16, textAlign: "center", minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
-        <Text style={{ color: "#64748B" }}>加载中...</Text>
+      <View style={{ padding: spacing.md, textAlign: "center", minHeight: "100vh", backgroundColor: colors.gray[50] }}>
+        <Text style={{ color: colors.gray[400] }}>加载中...</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={{ padding: 16, minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
-      <View style={{ fontSize: 22, fontWeight: 600, color: "#1E293B", marginBottom: 20 }}>
+    <ScrollView style={{ padding: spacing.md, minHeight: "100vh", backgroundColor: colors.gray[50] }}>
+      <View style={{ fontSize: font.h3.size, fontWeight: font.h3.weight, color: colors.gray[900], marginBottom: spacing.lg, display: "flex", alignItems: "center", gap: spacing.sm }}>
+        <ClipboardList size={24} color={colors.primary[500]} />
         我的订单
       </View>
 
       {orders.length === 0 ? (
-        <View style={{ textAlign: "center", padding: 60, backgroundColor: "#FFFFFF", borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,0.05)" }}>
-          <Text style={{ fontSize: 16, color: "#94A3B8" }}>暂无订单</Text>
+        <View style={{ textAlign: "center", padding: spacing.xxl, backgroundColor: colors.gray[0], borderRadius: radius.xl, boxShadow: shadows.level1 }}>
+          <Text style={{ fontSize: font.body.size, color: colors.gray[400] }}>暂无订单</Text>
         </View>
       ) : (
-        <View style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <View style={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
           {orders.map((order) => {
             const status = STATUS_MAP[order.status];
             return (
               <View
                 key={order.id}
                 style={{
-                  backgroundColor: "#FFFFFF",
-                  borderRadius: 16,
-                  padding: 20,
-                  boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
+                  backgroundColor: colors.gray[0],
+                  borderRadius: radius.xl,
+                  padding: spacing.xl,
+                  boxShadow: shadows.level1
                 }}
                 onClick={() => handleOrderClick(order.id)}
               >
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <Text style={{ fontSize: 16, fontWeight: 600, color: "#1E293B" }}>{order.category || "通用"}</Text>
-                  <Text style={{ fontSize: 14, color: status?.color, fontWeight: 500 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing.md }}>
+                  <Text style={{ fontSize: font.body.size, fontWeight: font.title.weight, color: colors.gray[900] }}>{order.category || "通用"}</Text>
+                  <Text style={{ fontSize: font.caption.size, color: status?.color, fontWeight: fontWeights.medium }}>
                     {status?.label || order.status}
                   </Text>
                 </View>
 
-                <View style={{ marginBottom: 12 }}>
-                  <Text style={{ fontSize: 14, color: "#475569" }}>{order.description}</Text>
+                <View style={{ marginBottom: spacing.md }}>
+                  <Text style={{ fontSize: font.bodySmall.size, color: colors.gray[600] }}>{order.description}</Text>
                 </View>
 
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                  <Text style={{ fontSize: 12, color: "#94A3B8" }}>{formatDate(order.createdAt)}</Text>
-                  <Text style={{ fontSize: 18, color: "#22C55E", fontWeight: 700 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Clock size={12} color={colors.gray[400]} />
+                    <Text style={{ fontSize: font.caption.size, color: colors.gray[400], marginLeft: spacing.xs }}>{formatDate(order.createdAt)}</Text>
+                  </View>
+                  <Text style={{ fontSize: font.h2.size, color: colors.success, fontWeight: font.h2.weight }}>
                     ¥{order.price}
                   </Text>
                 </View>
 
                 {order.provider && (
-                  <View style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #E2E8F0" }}>
-                    <Text style={{ fontSize: 14, color: "#64748B" }}>
+                  <View style={{ marginTop: spacing.md, paddingTop: spacing.md, borderTop: `1px solid ${colors.gray[200]}` }}>
+                    <Text style={{ fontSize: font.bodySmall.size, color: colors.gray[500] }}>
                       师傅：{order.provider.name}
                     </Text>
                   </View>
@@ -117,3 +123,7 @@ export default function OrderListPage() {
     </ScrollView>
   );
 }
+
+const fontWeights = {
+  medium: 500,
+};

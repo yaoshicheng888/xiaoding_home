@@ -5,6 +5,7 @@ import Orders from "./pages/orders";
 import MyOrders from "./pages/my-orders";
 import Income from "./pages/income";
 import Detail from "./pages/detail";
+import { colors } from "design-system";
 import "./App.css";
 
 type Page = "login" | "home" | "orders" | "my-orders" | "income" | "detail";
@@ -37,20 +38,14 @@ function App() {
     setPage("home");
   };
 
-  const handleBackToHome = () => {
-    setPage("home");
-  };
-
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: colors.gray[50] }}>
       {page === "login" && <Login onLogin={handleLogin} />}
       {page === "home" && <Home onNavigate={handleNavigate} />}
-      {page === "orders" && <Orders onDetail={handleDetail} onBack={handleBackToHome} />}
-      {page === "my-orders" && <MyOrders onDetail={handleDetail} onBack={handleBackToHome} />}
-      {page === "income" && <Income onBack={handleBackToHome} />}
-      {page === "detail" && orderId && (
-        <Detail orderId={orderId} onBack={handleBack} />
-      )}
+      {page === "orders" && <Orders onDetail={handleDetail} onBack={handleBack} />}
+      {page === "my-orders" && <MyOrders onDetail={handleDetail} onBack={handleBack} />}
+      {page === "income" && <Income onBack={handleBack} />}
+      {page === "detail" && orderId && <Detail orderId={orderId} onBack={handleBack} />}
     </div>
   );
 }

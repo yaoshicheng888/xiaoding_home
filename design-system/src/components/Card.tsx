@@ -8,6 +8,7 @@ interface CardProps {
   hoverable?: boolean;
   className?: string;
   style?: React.CSSProperties;
+  onClick?: () => void;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -17,6 +18,7 @@ export const Card: React.FC<CardProps> = ({
   hoverable = false,
   className,
   style,
+  onClick,
 }) => {
   return (
     <div
@@ -31,6 +33,7 @@ export const Card: React.FC<CardProps> = ({
         ...style,
       }}
       className={className}
+      onClick={onClick}
     >
       {children}
     </div>

@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { View, Text, Input, Button } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
+import { Smartphone, Home } from "lucide-react";
 import { login } from "../../api";
+import { Button, Input } from "design-system";
+import { colors, font, spacing, shadows, radius } from "design-system";
 
 export default function Login() {
   const [phone, setPhone] = useState("");
@@ -25,47 +28,44 @@ export default function Login() {
   };
 
   return (
-    <View style={{ padding: 40, paddingTop: 100, minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
+    <View style={{ padding: spacing.xl, paddingTop: 100, minHeight: "100vh", backgroundColor: colors.gray[50] }}>
       <View style={{ textAlign: "center", marginBottom: 56 }}>
-        <Text style={{ fontSize: 32, fontWeight: 700, color: "#2563EB" }}>
+        <View style={{ marginBottom: spacing.md }}>
+          <Home size={48} color={colors.primary[500]} />
+        </View>
+        <Text style={{ fontSize: font.display.size, fontWeight: font.display.weight, color: colors.primary[500] }}>
           小钉到家
         </Text>
-        <Text style={{ display: "block", fontSize: 14, color: "#64748B", marginTop: 8 }}>
+        <Text style={{ display: "block", fontSize: font.bodySmall.size, color: colors.gray[500], marginTop: spacing.sm }}>
           专业家政维修服务
         </Text>
       </View>
-      <View style={{ marginBottom: 24 }}>
-        <Input
-          style={{
-            height: 52,
-            border: "1px solid #E2E8F0",
-            borderRadius: 12,
-            paddingLeft: 20,
-            fontSize: 16,
-            color: "#1E293B",
-            backgroundColor: "#FFFFFF"
-          }}
-          placeholder="请输入手机号"
-          placeholderStyle={{ color: "#94A3B8" }}
-          type="number"
-          maxlength={11}
-          onInput={(e) => setPhone(e.detail.value)}
-        />
+      <View style={{
+        backgroundColor: colors.gray[0],
+        borderRadius: radius.xl,
+        padding: spacing.xl,
+        boxShadow: shadows.level1
+      }}>
+        <View style={{ marginBottom: spacing.lg }}>
+          <Input
+            inputSize="large"
+            placeholder="请输入手机号"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            maxLength={11}
+          />
+        </View>
+        <Button
+          variant="primary"
+          size="large"
+          block
+          onClick={handleLogin}
+          icon={<Smartphone size={18} />}
+        >
+          登录
+        </Button>
       </View>
-      <Button
-        style={{
-          height: 52,
-          borderRadius: 14,
-          backgroundColor: "#2563EB",
-          color: "#FFFFFF",
-          fontSize: 18,
-          fontWeight: 600
-        }}
-        onClick={handleLogin}
-      >
-        登录
-      </Button>
-      <Text style={{ display: "block", textAlign: "center", fontSize: 12, color: "#94A3B8", marginTop: 20 }}>
+      <Text style={{ display: "block", textAlign: "center", fontSize: font.caption.size, color: colors.gray[400], marginTop: spacing.lg }}>
         输入手机号即可登录
       </Text>
     </View>

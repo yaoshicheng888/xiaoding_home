@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
-import { Table, Tag, message, Card, Row, Col } from "antd";
-import { getPayments, Payment, paymentStatusMap } from "../api";
+import { Table, message, Row, Col } from "antd";
+import { getPayments, Payment } from "../api";
+import { Badge, Card } from "design-system";
+import { colors, font, spacing, shadows } from "design-system";
+
+const paymentBadgeMap: Record<string, { status: "warning" | "info" | "success" | "error" | "default"; label: string }> = {
+  pending: { status: "warning", label: "待支付" },
+  paid: { status: "info", label: "已支付" },
+  settled: { status: "success", label: "已结算" },
+  refunded: { status: "error", label: "已退款" },
+};
+
+const getPaymentBadge = (status: string) => paymentBadgeMap[status] || { status: "default" as const, label: status };
 
 export default function Finance() {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -26,49 +37,49 @@ export default function Finance() {
   const totalProviderIncome = payments.reduce((sum, p) => sum + p.providerIncome, 0);
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id", render: (val: number) => <span style={{ color: "#64748B" }}>{val}</span> },
-    { title: "订单号", dataIndex: "orderId", key: "orderId", render: (id: number) => <span style={{ fontWeight: 600, color: "#2563EB" }}>#{id}</span> },
-    { title: "订单类目", dataIndex: "order", key: "orderCategory", render: (o: Payment["order"]) => <span style={{ color: "#1E293B" }}>{o?.category || "-"}</span> },
-    { title: "金额", dataIndex: "amount", key: "amount", render: (a: number) => <span style={{ color: "#22C55E", fontWeight: 600, fontSize: 16 }}>¥{a}</span> },
-    { title: "平台抽成", dataIndex: "platformFee", key: "platformFee", render: (f: number) => <span style={{ color: "#F59E0B", fontWeight: 600 }}>¥{f}</span> },
-    { title: "师傅收入", dataIndex: "providerIncome", key: "providerIncome", render: (i: number) => <span style={{ color: "#2563EB", fontWeight: 600 }}>¥{i}</span> },
+    { title: "ID", dataIndex: "id", key: "id", render: (val: number) => <span style={{ color: colors.gray[500] }}>{val}</span> },
+    { title: "订单号", dataIndex: "orderId", key: "orderId", render: (id: number) => <span style={{ fontWeight: font.title.weight, color: colors.primary[500] }}>#{id}</span> },
+    { title: "订单类目", dataIndex: "order", key: "orderCategory", render: (o: Payment["order"]) => <span style={{ color: colors.gray[900] }}>{o?.category || "-"}</span> },
+    { title: "金额", dataIndex: "amount", key: "amount", render: (a: number) => <span style={{ color: colors.success, fontWeight: font.title.weight, fontSize: font.body.size }}>¥{a}</span> },
+    { title: "平台抽成", dataIndex: "platformFee", key: "platformFee", render: (f: number) => <span style={{ color: colors.warning, fontWeight: font.title.weight }}>¥{f}</span> },
+    { title: "师傅收入", dataIndex: "providerIncome", key: "providerIncome", render: (i: number) => <span style={{ color: colors.primary[500], fontWeight: font.title.weight }}>¥{i}</span> },
     {
       title: "状态",
       dataIndex: "status",
       key: "status",
       render: (status: string) => {
-        const info = paymentStatusMap[status] || { color: "#94A3B8", label: status };
-        return <Tag color={info.color} style={{ borderRadius: 4, padding: "2px 8px" }}>{info.label}</Tag>;
+        const info = getPaymentBadge(status);
+        return <Badge text={info.label} status={info.status as any} />;
       },
     },
-    { title: "创建时间", dataIndex: "createdAt", key: "createdAt", render: (date: string) => <span style={{ color: "#64748B", fontSize: 12 }}>{new Date(date).toLocaleString("zh-CN")}</span> },
+    { title: "创建时间", dataIndex: "createdAt", key: "createdAt", render: (date: string) => <span style={{ color: colors.gray[500], fontSize: font.caption.size }}>{new Date(date).toLocaleString("zh-CN")}</span> },
   ];
 
   return (
     <div>
-      <h2 style={{ marginBottom: 24, fontSize: 24, fontWeight: 600, color: "#1E293B" }}>财务系统</h2>
-      <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+      <h2 style={{ marginBottom: spacing.xl, fontSize: font.h2.size, fontWeight: font.h2.weight, color: colors.gray[900] }}>财务系统</h2>
+      <Row gutter={[spacing.xl, spacing.xl]} style={{ marginBottom: spacing.xl }}>
         <Col span={8}>
-          <Card style={{ borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,.05)" }}>
-            <div style={{ fontSize: 14, color: "#64748B", marginBottom: 8 }}>总成交金额</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: "#22C55E" }}>¥{totalAmount}</div>
+          <Card style={{ boxShadow: shadows.level1 }}>
+            <div style={{ fontSize: font.bodySmall.size, color: colors.gray[500], marginBottom: spacing.sm }}>总成交金额</div>
+            <div style={{ fontSize: font.h1.size, fontWeight: font.h1.weight, color: colors.success }}>¥{totalAmount}</div>
           </Card>
         </Col>
         <Col span={8}>
-          <Card style={{ borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,.05)" }}>
-            <div style={{ fontSize: 14, color: "#64748B", marginBottom: 8 }}>平台总收入</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: "#F59E0B" }}>¥{totalPlatformFee}</div>
+          <Card style={{ boxShadow: shadows.level1 }}>
+            <div style={{ fontSize: font.bodySmall.size, color: colors.gray[500], marginBottom: spacing.sm }}>平台总收入</div>
+            <div style={{ fontSize: font.h1.size, fontWeight: font.h1.weight, color: colors.warning }}>¥{totalPlatformFee}</div>
           </Card>
         </Col>
         <Col span={8}>
-          <Card style={{ borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,.05)" }}>
-            <div style={{ fontSize: 14, color: "#64748B", marginBottom: 8 }}>师傅总收入</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: "#2563EB" }}>¥{totalProviderIncome}</div>
+          <Card style={{ boxShadow: shadows.level1 }}>
+            <div style={{ fontSize: font.bodySmall.size, color: colors.gray[500], marginBottom: spacing.sm }}>师傅总收入</div>
+            <div style={{ fontSize: font.h1.size, fontWeight: font.h1.weight, color: colors.primary[500] }}>¥{totalProviderIncome}</div>
           </Card>
         </Col>
       </Row>
-      <Card style={{ borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,.05)" }}>
-        <h3 style={{ marginBottom: 16, fontSize: 18, fontWeight: 600, color: "#1E293B" }}>支付记录</h3>
+      <Card style={{ boxShadow: shadows.level1 }}>
+        <h3 style={{ marginBottom: spacing.lg, fontSize: font.title.size, fontWeight: font.title.weight, color: colors.gray[900] }}>支付记录</h3>
         <Table columns={columns} dataSource={payments} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />
       </Card>
     </div>

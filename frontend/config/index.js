@@ -1,3 +1,5 @@
+const path = require('path')
+
 const config = {
   projectName: 'xiaoding-mini',
   date: '2026-7-2',
@@ -20,6 +22,12 @@ const config = {
   },
   framework: 'react',
   compiler: 'webpack5',
+  compile: {
+    include: [
+      path.resolve(__dirname, '..', '..', 'design-system'),
+      path.resolve(__dirname, '..', '..', 'node_modules', 'design-system')
+    ]
+  },
   cache: {
     enable: false
   },
@@ -50,6 +58,14 @@ const config = {
     }
   },
   h5: {
+    webpackChain(chain) {
+      chain.module
+        .rule('script')
+        .include
+          .add(path.resolve(__dirname, '..', '..', 'design-system'))
+          .add(path.resolve(__dirname, '..', '..', 'node_modules', 'design-system'))
+          .end()
+    },
     publicPath: '/',
     staticDirectory: 'static',
     devServer: {

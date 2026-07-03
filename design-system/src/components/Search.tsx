@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Search as SearchIcon, Mic } from 'lucide-react';
 import { colors, font, radius, spacing, shadows } from '../tokens';
 
 interface SearchProps {
@@ -8,6 +9,10 @@ interface SearchProps {
   onSearch?: (value: string) => void;
   aiMode?: boolean;
 }
+
+const fontWeights = {
+  semibold: 600,
+};
 
 export const Search: React.FC<SearchProps> = ({
   placeholder = '搜索服务或描述问题',
@@ -67,7 +72,9 @@ export const Search: React.FC<SearchProps> = ({
             AI
           </span>
         )}
-        <span style={{ marginRight: spacing.sm, color: colors.gray[400] }}>🔍</span>
+        <span style={{ marginRight: spacing.sm, color: colors.gray[400], display: 'inline-flex' }}>
+          <SearchIcon size={18} />
+        </span>
         <input
           style={{
             flex: 1,
@@ -90,17 +97,21 @@ export const Search: React.FC<SearchProps> = ({
             cursor: 'pointer',
             padding: spacing.sm,
             color: colors.gray[400],
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             transition: 'color 150ms',
-            '&:hover': { color: colors.primary[500] },
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.color = colors.primary[500];
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.color = colors.gray[400];
           }}
         >
-          🎤
+          <Mic size={18} />
         </button>
       </div>
     </div>
   );
-};
-
-const fontWeights = {
-  semibold: 600,
 };

@@ -1,11 +1,12 @@
 import React from 'react';
-import { colors, font, radius, spacing, borderColors } from '../tokens';
+import { X } from 'lucide-react';
+import { colors, font, radius, spacing, borderColors, bgColors } from '../tokens';
 
 type InputSize = 'small' | 'medium' | 'large';
 type InputStatus = 'default' | 'focus' | 'error' | 'disabled';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  size?: InputSize;
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix' | 'suffix'> {
+  inputSize?: InputSize;
   status?: InputStatus;
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
@@ -14,7 +15,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input: React.FC<InputProps> = ({
-  size = 'medium',
+  inputSize = 'medium',
   status = 'default',
   prefix,
   suffix,
@@ -56,7 +57,7 @@ export const Input: React.FC<InputProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          height: `${heights[size]}px`,
+          height: `${heights[inputSize]}px`,
           backgroundColor: disabled ? colors.gray[100] : bgColors.input,
           borderRadius: radius.md,
           border: `1px solid ${getBorderColor()}`,
@@ -65,7 +66,7 @@ export const Input: React.FC<InputProps> = ({
         }}
       >
         {prefix && (
-          <span style={{ marginRight: spacing.sm, color: colors.gray[400] }}>
+          <span style={{ marginRight: spacing.sm, color: colors.gray[400], display: 'inline-flex' }}>
             {prefix}
           </span>
         )}
@@ -78,7 +79,6 @@ export const Input: React.FC<InputProps> = ({
             backgroundColor: 'transparent',
             fontSize: font.body.size,
             color: colors.gray[900],
-            placeholder: '',
           }}
           placeholder={placeholder}
           value={value}
@@ -97,13 +97,16 @@ export const Input: React.FC<InputProps> = ({
               cursor: 'pointer',
               padding: spacing.xs,
               color: colors.gray[400],
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            ✕
+            <X size={16} />
           </button>
         )}
         {suffix && !clearable && (
-          <span style={{ marginLeft: spacing.sm, color: colors.gray[400] }}>
+          <span style={{ marginLeft: spacing.sm, color: colors.gray[400], display: 'inline-flex' }}>
             {suffix}
           </span>
         )}
@@ -115,8 +118,4 @@ export const Input: React.FC<InputProps> = ({
       )}
     </div>
   );
-};
-
-const bgColors = {
-  input: colors.gray[0],
 };

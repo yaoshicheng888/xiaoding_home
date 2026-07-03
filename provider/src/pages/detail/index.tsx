@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
+import { ArrowLeft, X, Upload, User, Phone, MapPin, Calendar, FileText } from "lucide-react";
 import { getOrderDetail, startService, completeOrder } from "../../api";
+import { Card, Button, Badge } from "design-system";
+import { colors, font, spacing, shadows, radius } from "design-system";
 
-const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  created: { label: "待接单", color: "#F59E0B" },
-  assigned: { label: "已派单", color: "#2563EB" },
-  accepted: { label: "已接单", color: "#22C55E" },
-  doing: { label: "服务中", color: "#06B6D4" },
-  completed: { label: "已完成", color: "#64748B" }
+const STATUS_MAP: Record<string, { label: string; status: "warning" | "info" | "success" | "default" }> = {
+  created: { label: "待接单", status: "warning" },
+  assigned: { label: "已派单", status: "info" },
+  accepted: { label: "已接单", status: "success" },
+  doing: { label: "服务中", status: "info" },
+  completed: { label: "已完成", status: "default" }
 };
 
 export default function Detail({ orderId, onBack }: { orderId: number; onBack: () => void }) {
@@ -52,36 +55,25 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
     }
   };
 
-  const status = order ? (STATUS_MAP[order.status] || { label: order.status, color: "#64748B" }) : { label: "未知", color: "#64748B" };
+  const status = order ? (STATUS_MAP[order.status] || { label: order.status, status: "default" as const }) : { label: "未知", status: "default" as const };
 
   if (!order) {
     return (
-      <div style={{ padding: 20, textAlign: "center", minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
-        <p style={{ color: "#94A3B8" }}>加载中...</p>
-        <button
-          style={{
-            marginTop: 16,
-            padding: "8px 20px",
-            borderRadius: 8,
-            backgroundColor: "#2563EB",
-            color: "#FFFFFF",
-            border: "none",
-            cursor: "pointer"
-          }}
-          onClick={onBack}
-        >
+      <div style={{ padding: spacing.lg, textAlign: "center", minHeight: "100vh", backgroundColor: colors.gray[50] }}>
+        <p style={{ color: colors.gray[400] }}>加载中...</p>
+        <Button variant="primary" size="small" style={{ marginTop: spacing.lg }} onClick={onBack}>
           返回
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 480, margin: "0 auto", paddingBottom: 100, minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
+    <div style={{ maxWidth: 480, margin: "0 auto", paddingBottom: 100, minHeight: "100vh", backgroundColor: colors.gray[50] }}>
       <div style={{
-        padding: "16px 20px",
-        backgroundColor: "#FFFFFF",
-        borderBottom: "1px solid #E2E8F0",
+        padding: `${spacing.md}px ${spacing.lg}px`,
+        backgroundColor: colors.gray[0],
+        borderBottom: `1px solid ${colors.gray[200]}`,
         display: "flex",
         alignItems: "center",
         position: "sticky",
@@ -89,99 +81,73 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
         zIndex: 100
       }}>
         <span
-          style={{ color: "#2563EB", cursor: "pointer", marginRight: 16, fontSize: 16, fontWeight: 500 }}
+          style={{ color: colors.primary[500], cursor: "pointer", marginRight: spacing.md, fontSize: font.body.size, fontWeight: fontWeights.medium, display: "inline-flex", alignItems: "center", gap: spacing.xs }}
           onClick={onBack}
         >
-          ← 返回
+          <ArrowLeft size={18} />
+          返回
         </span>
-        <span style={{ fontSize: 18, fontWeight: 600, color: "#1E293B" }}>订单详情</span>
+        <span style={{ fontSize: font.title.size, fontWeight: font.title.weight, color: colors.gray[900] }}>订单详情</span>
       </div>
 
-      <div style={{ padding: 16 }}>
-        <div style={{
-          backgroundColor: "#FFFFFF",
-          borderRadius: 16,
-          padding: 20,
-          marginBottom: 16,
-          boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-            <span style={{ fontSize: 18, fontWeight: 600, color: "#1E293B" }}>{order.category}</span>
-            <span style={{
-              color: status.color,
-              fontWeight: 600,
-              fontSize: 16,
-              padding: "4px 12px",
-              borderRadius: 6,
-              backgroundColor: status.color === "#F59E0B" ? "#FEF3C7" : status.color === "#2563EB" ? "#EFF6FF" : status.color === "#22C55E" ? "#ECFDF5" : status.color === "#06B6D4" ? "#ECFEFF" : "#F1F5F9"
-            }}>
-              {status.label}
-            </span>
+      <div style={{ padding: spacing.md }}>
+        <Card style={{ marginBottom: spacing.md, boxShadow: shadows.level1 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: spacing.md, alignItems: "center" }}>
+            <span style={{ fontSize: font.title.size, fontWeight: font.title.weight, color: colors.gray[900] }}>{order.category}</span>
+            <Badge text={status.label} status={status.status} />
           </div>
-          <p style={{ color: "#475569", fontSize: 14, margin: "0 0 12px 0" }}>
+          <p style={{ color: colors.gray[600], fontSize: font.bodySmall.size, margin: `0 0 ${spacing.md}px 0` }}>
             {order.description}
           </p>
-          <p style={{ color: "#22C55E", fontSize: 24, fontWeight: 700, margin: "0" }}>
+          <p style={{ color: colors.success, fontSize: font.h2.size, fontWeight: font.h2.weight, margin: 0 }}>
             ¥{order.price}
           </p>
-        </div>
+        </Card>
 
         {order.user && (
-          <div style={{
-            backgroundColor: "#FFFFFF",
-            borderRadius: 16,
-            padding: 20,
-            marginBottom: 16,
-            boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
-          }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1E293B", margin: "0 0 16px 0" }}>客户信息</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+          <Card style={{ marginBottom: spacing.md, boxShadow: shadows.level1 }}>
+            <h3 style={{ fontSize: font.body.size, fontWeight: font.title.weight, color: colors.gray[900], margin: `0 0 ${spacing.lg}px 0` }}>客户信息</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
+              <p style={{ color: colors.gray[600], fontSize: font.bodySmall.size, margin: 0, display: "flex", alignItems: "center", gap: spacing.xs }}>
+                <User size={14} color={colors.gray[400]} />
                 姓名：{order.user.name || "-"}
               </p>
-              <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+              <p style={{ color: colors.gray[600], fontSize: font.bodySmall.size, margin: 0, display: "flex", alignItems: "center", gap: spacing.xs }}>
+                <Phone size={14} color={colors.gray[400]} />
                 电话：{order.user.phone || "-"}
               </p>
-              <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+              <p style={{ color: colors.gray[600], fontSize: font.bodySmall.size, margin: 0, display: "flex", alignItems: "center", gap: spacing.xs }}>
+                <MapPin size={14} color={colors.gray[400]} />
                 城市：{order.user.city || "-"}
               </p>
             </div>
-          </div>
+          </Card>
         )}
 
-        <div style={{
-          backgroundColor: "#FFFFFF",
-          borderRadius: 16,
-          padding: 20,
-          marginBottom: 16,
-          boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
-        }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1E293B", margin: "0 0 16px 0" }}>订单信息</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+        <Card style={{ marginBottom: spacing.md, boxShadow: shadows.level1 }}>
+          <h3 style={{ fontSize: font.body.size, fontWeight: font.title.weight, color: colors.gray[900], margin: `0 0 ${spacing.lg}px 0` }}>订单信息</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
+            <p style={{ color: colors.gray[600], fontSize: font.bodySmall.size, margin: 0, display: "flex", alignItems: "center", gap: spacing.xs }}>
+              <FileText size={14} color={colors.gray[400]} />
               订单号：#{order.id}
             </p>
-            <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>
+            <p style={{ color: colors.gray[600], fontSize: font.bodySmall.size, margin: 0, display: "flex", alignItems: "center", gap: spacing.xs }}>
+              <Calendar size={14} color={colors.gray[400]} />
               创建时间：{order.createdAt ? new Date(order.createdAt).toLocaleString() : "-"}
             </p>
           </div>
-        </div>
+        </Card>
 
         {order.status === "doing" && (
-          <div style={{
-            backgroundColor: "#FFFFFF",
-            borderRadius: 16,
-            padding: 20,
-            boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
-          }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1E293B", margin: "0 0 16px 0" }}>上传凭证</h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
+          <Card style={{ boxShadow: shadows.level1 }}>
+            <h3 style={{ fontSize: font.body.size, fontWeight: font.title.weight, color: colors.gray[900], margin: `0 0 ${spacing.lg}px 0` }}>上传凭证</h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: spacing.md, marginBottom: spacing.lg }}>
               {uploadedImages.map((img, idx) => (
                 <div key={idx} style={{
                   width: 80,
                   height: 80,
-                  borderRadius: 12,
-                  border: "1px solid #E2E8F0",
+                  borderRadius: radius.md,
+                  border: `1px solid ${colors.gray[200]}`,
                   overflow: "hidden",
                   position: "relative"
                 }}>
@@ -192,36 +158,34 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
                       position: "absolute",
                       top: 4,
                       right: 4,
-                      color: "#EF4444",
+                      color: colors.danger,
                       cursor: "pointer",
-                      fontSize: 16,
-                      fontWeight: 600,
-                      background: "rgba(255,255,255,0.9)",
+                      background: colors.gray[0],
                       borderRadius: "50%",
                       width: 20,
                       height: 20,
-                      lineHeight: "20px",
-                      textAlign: "center"
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
                     }}
                   >
-                    ×
+                    <X size={14} />
                   </span>
                 </div>
               ))}
               <label style={{
                 width: 80,
                 height: 80,
-                borderRadius: 12,
-                border: "2px dashed #CBD5E1",
+                borderRadius: radius.md,
+                border: `2px dashed ${colors.gray[300]}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
-                color: "#94A3B8",
-                fontSize: 28,
+                color: colors.gray[400],
                 transition: "border-color 150ms"
               }}>
-                +
+                <Upload size={28} />
                 <input
                   type="file"
                   accept="image/*"
@@ -243,7 +207,7 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
               </label>
             </div>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: "#475569", marginBottom: 8 }}>文字说明</div>
+              <div style={{ fontSize: font.bodySmall.size, fontWeight: fontWeights.medium, color: colors.gray[600], marginBottom: spacing.sm }}>文字说明</div>
               <textarea
                 value={remark}
                 onChange={(e) => setRemark(e.target.value)}
@@ -251,18 +215,18 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
                 style={{
                   width: "100%",
                   minHeight: 100,
-                  borderRadius: 12,
-                  border: "1px solid #E2E8F0",
-                  padding: 12,
-                  fontSize: 14,
+                  borderRadius: radius.md,
+                  border: `1px solid ${colors.gray[200]}`,
+                  padding: spacing.md,
+                  fontSize: font.bodySmall.size,
                   resize: "vertical",
                   boxSizing: "border-box",
-                  backgroundColor: "#FAFAFA",
-                  color: "#1E293B"
+                  backgroundColor: colors.gray[50],
+                  color: colors.gray[900]
                 }}
               />
             </div>
-          </div>
+          </Card>
         )}
       </div>
 
@@ -271,70 +235,33 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: "#FFFFFF",
-        padding: "16px 20px",
-        borderTop: "1px solid #E2E8F0",
-        boxShadow: "0 -2px 10px rgba(15,23,42,0.05)"
+        backgroundColor: colors.gray[0],
+        padding: `${spacing.md}px ${spacing.lg}px`,
+        borderTop: `1px solid ${colors.gray[200]}`,
+        boxShadow: shadows.level2
       }}>
         <div style={{ maxWidth: 480, margin: "0 auto", width: "100%" }}>
           {order.status === "accepted" && (
-            <button
-              style={{
-                width: "100%",
-                height: 52,
-                borderRadius: 14,
-                backgroundColor: "#22C55E",
-                color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: 600,
-                border: "none",
-                cursor: "pointer",
-                transition: "background-color 150ms"
-              }}
-              onClick={handleStart}
-            >
+            <Button variant="primary" size="large" block onClick={handleStart}>
               开始上门
-            </button>
+            </Button>
           )}
           {order.status === "doing" && (
-            <button
-              style={{
-                width: "100%",
-                height: 52,
-                borderRadius: 14,
-                backgroundColor: "#F59E0B",
-                color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: 600,
-                border: "none",
-                cursor: "pointer",
-                transition: "background-color 150ms"
-              }}
-              onClick={handleComplete}
-            >
+            <Button variant="primary" size="large" block onClick={handleComplete}>
               完工提交
-            </button>
+            </Button>
           )}
           {order.status === "completed" && (
-            <button
-              style={{
-                width: "100%",
-                height: 52,
-                borderRadius: 14,
-                backgroundColor: "#E2E8F0",
-                color: "#94A3B8",
-                fontSize: 18,
-                fontWeight: 600,
-                border: "none",
-                cursor: "default"
-              }}
-              disabled
-            >
+            <Button variant="secondary" size="large" block disabled>
               已完成
-            </button>
+            </Button>
           )}
         </div>
       </div>
     </div>
   );
 }
+
+const fontWeights = {
+  medium: 500,
+};

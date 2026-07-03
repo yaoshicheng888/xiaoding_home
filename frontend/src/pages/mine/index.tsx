@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { View, Text, Button } from "@tarojs/components";
 import Taro from "@tarojs/taro";
+import { ClipboardList, MapPin, MessageCircle, Settings, User, ChevronRight, LogOut } from "lucide-react";
 import { getUserInfo } from "../../api";
+import { colors, font, spacing, shadows, radius } from "design-system";
 
 const MENU_ITEMS = [
-  { label: "我的订单", icon: "📋", url: "/pages/orders/index" },
-  { label: "地址管理", icon: "📍", url: "/pages/index/index" },
-  { label: "客服中心", icon: "💬", url: "/pages/index/index" },
-  { label: "设置", icon: "⚙️", url: "/pages/index/index" },
+  { label: "我的订单", icon: <ClipboardList size={22} color={colors.primary[500]} />, url: "/pages/orders/index" },
+  { label: "地址管理", icon: <MapPin size={22} color={colors.success} />, url: "/pages/index/index" },
+  { label: "客服中心", icon: <MessageCircle size={22} color={colors.info} />, url: "/pages/index/index" },
+  { label: "设置", icon: <Settings size={22} color={colors.warning} />, url: "/pages/index/index" },
 ];
 
 export default function MinePage() {
@@ -60,83 +62,90 @@ export default function MinePage() {
 
   if (loading) {
     return (
-      <View style={{ padding: 16, textAlign: "center", minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
-        <Text style={{ color: "#64748B" }}>加载中...</Text>
+      <View style={{ padding: spacing.md, textAlign: "center", minHeight: "100vh", backgroundColor: colors.gray[50] }}>
+        <Text style={{ color: colors.gray[400] }}>加载中...</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
-      <View style={{ backgroundColor: "#2563EB", padding: 24, paddingTop: 64 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+    <View style={{ minHeight: "100vh", backgroundColor: colors.gray[50] }}>
+      <View style={{ backgroundColor: colors.primary[500], padding: spacing.lg, paddingTop: 64 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.md }}>
           <View style={{
             width: 88,
             height: 88,
-            borderRadius: 44,
-            backgroundColor: "#FFFFFF",
+            borderRadius: radius.full,
+            backgroundColor: colors.gray[0],
             justifyContent: "center",
             alignItems: "center",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+            boxShadow: shadows.level2
           }}>
-            <Text style={{ fontSize: 36 }}>👤</Text>
+            <User size={36} color={colors.primary[500]} />
           </View>
           <View>
-            <Text style={{ fontSize: 22, color: "#FFFFFF", fontWeight: 600, marginBottom: 8, display: "block" }}>
+            <Text style={{ fontSize: font.h3.size, color: colors.gray[0], fontWeight: font.h3.weight, marginBottom: spacing.xs, display: "block" }}>
               {user.name || "用户"}
             </Text>
-            <Text style={{ fontSize: 14, color: "rgba(255,255,255,0.85)" }}>
+            <Text style={{ fontSize: font.bodySmall.size, color: "rgba(var(--ds-white-rgb), 0.85)" }}>
               {user.phone || "-"}
             </Text>
           </View>
         </View>
       </View>
 
-      <View style={{ padding: 16, marginTop: -16 }}>
+      <View style={{ padding: spacing.md, marginTop: -spacing.md }}>
         <View style={{
-          backgroundColor: "#FFFFFF",
-          borderRadius: 16,
+          backgroundColor: colors.gray[0],
+          borderRadius: radius.xl,
           overflow: "hidden",
-          boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
+          boxShadow: shadows.level1
         }}>
           {MENU_ITEMS.map((item, index) => (
             <View
               key={item.label}
               style={{
-                padding: 16,
+                padding: spacing.md,
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
-                borderBottom: index < MENU_ITEMS.length - 1 ? "1px solid #E2E8F0" : "none"
+                borderBottom: index < MENU_ITEMS.length - 1 ? `1px solid ${colors.gray[200]}` : "none"
               }}
               onClick={() => handleMenuClick(item.url)}
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-                <Text style={{ fontSize: 22 }}>{item.icon}</Text>
-                <Text style={{ fontSize: 16, color: "#1E293B" }}>{item.label}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.sm }}>
+                {item.icon}
+                <Text style={{ fontSize: font.body.size, color: colors.gray[900] }}>{item.label}</Text>
               </View>
-              <Text style={{ fontSize: 16, color: "#CBD5E1" }}>›</Text>
+              <ChevronRight size={18} color={colors.gray[300]} />
             </View>
           ))}
         </View>
 
-        <View style={{ marginTop: 16 }}>
+        <View style={{ marginTop: spacing.md }}>
           <Button
             style={{
               height: 48,
-              borderRadius: 12,
-              backgroundColor: "#FFFFFF",
-              color: "#EF4444",
-              fontSize: 16,
-              fontWeight: 500,
-              border: "1px solid #EF4444"
+              borderRadius: radius.md,
+              backgroundColor: colors.gray[0],
+              color: colors.danger,
+              fontSize: font.body.size,
+              fontWeight: fontWeights.medium,
+              border: `1px solid ${colors.danger}`
             }}
             onClick={handleLogout}
           >
-            退出登录
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+              <LogOut size={16} color={colors.danger} />
+              <Text style={{ marginLeft: spacing.xs }}>退出登录</Text>
+            </View>
           </Button>
         </View>
       </View>
     </View>
   );
 }
+
+const fontWeights = {
+  medium: 500,
+};

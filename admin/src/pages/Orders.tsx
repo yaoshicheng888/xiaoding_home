@@ -1,10 +1,22 @@
 import { useEffect, useState } from "react";
-import { Table, Tag, Button, message, Modal, Timeline, Select, Card } from "antd";
-import { SendOutlined, HistoryOutlined } from "@ant-design/icons";
+import { Table, message, Modal, Timeline, Select } from "antd";
+import { Send, History } from "lucide-react";
 import { getOrders, getOrderLogs, getProviders, autoDispatch, manualDispatch, Order, Provider, OrderStatusLog, statusMap } from "../api";
+import { Button, Badge } from "design-system";
+import { colors, font, spacing, shadows } from "design-system";
 
 let dispatchModal: ReturnType<typeof Modal.info> | null = null;
 let logsModal: ReturnType<typeof Modal.info> | null = null;
+
+const statusBadgeMap: Record<string, { status: "warning" | "info" | "success" | "default"; label: string }> = {
+  created: { status: "warning", label: "待接单" },
+  assigned: { status: "info", label: "已派单" },
+  accepted: { status: "info", label: "已接单" },
+  doing: { status: "info", label: "服务中" },
+  completed: { status: "success", label: "已完成" },
+};
+
+const getBadgeStatus = (status: string) => statusBadgeMap[status] || { status: "default" as const, label: status };
 
 const handleViewLogs = async (order: Order) => {
   try {
@@ -12,21 +24,21 @@ const handleViewLogs = async (order: Order) => {
     logsModal = Modal.info({
       title: `订单状态流转 - #${order.id}`,
       content: (
-        <div style={{ padding: 24 }}>
+        <div style={{ padding: spacing.xl }}>
           {logs.length === 0 ? (
-            <p style={{ color: "#64748B", textAlign: "center", padding: "40px 0" }}>暂无状态流转记录</p>
+            <p style={{ color: colors.gray[500], textAlign: "center", padding: `${spacing.xxl}px 0` }}>暂无状态流转记录</p>
           ) : (
             <Timeline>
               {logs.map((log: OrderStatusLog) => (
                 <Timeline.Item key={log.id}>
                   <div>
-                    <span style={{ color: "#64748B" }}>{statusMap[log.fromStatus]?.label || log.fromStatus}</span>
+                    <span style={{ color: colors.gray[500] }}>{statusMap[log.fromStatus]?.label || log.fromStatus}</span>
                     {" → "}
-                    <Tag color={statusMap[log.toStatus]?.color || "#94A3B8"}>{statusMap[log.toStatus]?.label || log.toStatus}</Tag>
+                    <Badge text={statusMap[log.toStatus]?.label || log.toStatus} status={getBadgeStatus(log.toStatus).status as any} />
                   </div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 4 }}>操作人: {log.operator || "系统"}</div>
-                  {log.remark && <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 4 }}>备注: {log.remark}</div>}
-                  <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 4 }}>{new Date(log.createdAt).toLocaleString("zh-CN")}</div>
+                  <div style={{ fontSize: font.caption.size, color: colors.gray[400], marginTop: spacing.xxs }}>操作人: {log.operator || "系统"}</div>
+                  {log.remark && <div style={{ fontSize: font.caption.size, color: colors.gray[400], marginTop: spacing.xxs }}>备注: {log.remark}</div>}
+                  <div style={{ fontSize: font.caption.size, color: colors.gray[400], marginTop: spacing.xxs }}>{new Date(log.createdAt).toLocaleString("zh-CN")}</div>
                 </Timeline.Item>
               ))}
             </Timeline>
@@ -46,21 +58,21 @@ const handleDispatch = async (order: Order) => {
   dispatchModal = Modal.info({
     title: `派单 - 订单 #${order.id}`,
     content: (
-      <div style={{ padding: 24 }}>
-        <div style={{ marginBottom: 16 }}>
-          <span style={{ color: "#64748B", fontSize: 14 }}>服务类目: </span>
-          <span style={{ color: "#1E293B", fontWeight: 500 }}>{order.category}</span>
+      <div style={{ padding: spacing.xl }}>
+        <div style={{ marginBottom: spacing.md }}>
+          <span style={{ color: colors.gray[500], fontSize: font.bodySmall.size }}>服务类目: </span>
+          <span style={{ color: colors.gray[900], fontWeight: font.title.weight }}>{order.category}</span>
         </div>
-        <div style={{ marginBottom: 16 }}>
-          <span style={{ color: "#64748B", fontSize: 14 }}>问题描述: </span>
-          <span style={{ color: "#1E293B" }}>{order.description}</span>
+        <div style={{ marginBottom: spacing.md }}>
+          <span style={{ color: colors.gray[500], fontSize: font.bodySmall.size }}>问题描述: </span>
+          <span style={{ color: colors.gray[900] }}>{order.description}</span>
         </div>
-        <div style={{ marginBottom: 24 }}>
-          <span style={{ color: "#64748B", fontSize: 14 }}>金额: </span>
-          <span style={{ color: "#22C55E", fontSize: 18, fontWeight: 600 }}>¥{order.price}</span>
+        <div style={{ marginBottom: spacing.xl }}>
+          <span style={{ color: colors.gray[500], fontSize: font.bodySmall.size }}>金额: </span>
+          <span style={{ color: colors.success, fontSize: font.h3.size, fontWeight: font.h3.weight }}>¥{order.price}</span>
         </div>
-        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <Button type="primary" onClick={() => handleAutoDispatch(order.id)}>
+        <div style={{ display: "flex", gap: spacing.md, alignItems: "center" }}>
+          <Button variant="primary" size="small" onClick={() => handleAutoDispatch(order.id)}>
             自动派单
           </Button>
           <Select
@@ -122,32 +134,32 @@ export default function Orders() {
   }, []);
 
   const columns = [
-    { title: "订单号", dataIndex: "id", key: "id", render: (id: number) => <span style={{ fontWeight: 600, color: "#2563EB" }}>#{id}</span> },
-    { title: "服务类目", dataIndex: "category", key: "category", render: (val: string) => <span style={{ color: "#1E293B", fontWeight: 500 }}>{val}</span> },
-    { title: "问题描述", dataIndex: "description", key: "description", ellipsis: true, render: (val: string) => <span style={{ color: "#475569" }}>{val}</span> },
-    { title: "客户", dataIndex: "user", key: "user", render: (user: Order["user"]) => <span style={{ color: "#1E293B" }}>{user?.name || "-"}</span> },
-    { title: "客户电话", dataIndex: "user", key: "phone", render: (user: Order["user"]) => <span style={{ color: "#64748B" }}>{user?.phone || "-"}</span> },
-    { title: "师傅", dataIndex: "provider", key: "provider", render: (provider: Order["provider"]) => <span style={{ color: "#1E293B" }}>{provider?.name || "-"}</span> },
-    { title: "金额", dataIndex: "price", key: "price", render: (price: number) => <span style={{ color: "#22C55E", fontWeight: 600, fontSize: 16 }}>¥{price}</span> },
+    { title: "订单号", dataIndex: "id", key: "id", render: (id: number) => <span style={{ fontWeight: font.title.weight, color: colors.primary[500] }}>#{id}</span> },
+    { title: "服务类目", dataIndex: "category", key: "category", render: (val: string) => <span style={{ color: colors.gray[900], fontWeight: font.title.weight }}>{val}</span> },
+    { title: "问题描述", dataIndex: "description", key: "description", ellipsis: true, render: (val: string) => <span style={{ color: colors.gray[600] }}>{val}</span> },
+    { title: "客户", dataIndex: "user", key: "user", render: (user: Order["user"]) => <span style={{ color: colors.gray[900] }}>{user?.name || "-"}</span> },
+    { title: "客户电话", dataIndex: "user", key: "phone", render: (user: Order["user"]) => <span style={{ color: colors.gray[500] }}>{user?.phone || "-"}</span> },
+    { title: "师傅", dataIndex: "provider", key: "provider", render: (provider: Order["provider"]) => <span style={{ color: colors.gray[900] }}>{provider?.name || "-"}</span> },
+    { title: "金额", dataIndex: "price", key: "price", render: (price: number) => <span style={{ color: colors.success, fontWeight: font.title.weight, fontSize: font.body.size }}>¥{price}</span> },
     {
       title: "状态",
       dataIndex: "status",
       key: "status",
       render: (status: string) => {
-        const info = statusMap[status] || statusMap.created;
-        return <Tag color={info.color} style={{ borderRadius: 4, padding: "2px 8px" }}>{info.label}</Tag>;
+        const info = getBadgeStatus(status);
+        return <Badge text={info.label} status={info.status as any} />;
       },
     },
-    { title: "创建时间", dataIndex: "createdAt", key: "createdAt", render: (date: string) => <span style={{ color: "#64748B", fontSize: 12 }}>{new Date(date).toLocaleString("zh-CN")}</span> },
+    { title: "创建时间", dataIndex: "createdAt", key: "createdAt", render: (date: string) => <span style={{ color: colors.gray[500], fontSize: font.caption.size }}>{new Date(date).toLocaleString("zh-CN")}</span> },
     {
       title: "操作",
       key: "action",
       render: (_: unknown, record: Order) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <Button type="primary" size="small" icon={<SendOutlined />} onClick={() => handleDispatch(record)} disabled={record.status === "completed"}>
+        <div style={{ display: "flex", gap: spacing.sm }}>
+          <Button variant="primary" size="small" icon={<Send size={14} />} onClick={() => handleDispatch(record)} disabled={record.status === "completed"}>
             派单
           </Button>
-          <Button size="small" icon={<HistoryOutlined />} onClick={() => handleViewLogs(record)}>
+          <Button variant="secondary" size="small" icon={<History size={14} />} onClick={() => handleViewLogs(record)}>
             状态流转
           </Button>
         </div>
@@ -157,8 +169,8 @@ export default function Orders() {
 
   return (
     <div>
-      <h2 style={{ marginBottom: 24, fontSize: 24, fontWeight: 600, color: "#1E293B" }}>订单管理</h2>
-      <Card style={{ borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,.05)" }}>
+      <h2 style={{ marginBottom: spacing.xl, fontSize: font.h2.size, fontWeight: font.h2.weight, color: colors.gray[900] }}>订单管理</h2>
+      <Card style={{ boxShadow: shadows.level1 }}>
         <Table columns={columns} dataSource={orders} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />
       </Card>
     </div>

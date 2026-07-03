@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { View, Text, Button } from "@tarojs/components";
 import Taro from "@tarojs/taro";
+import { Sparkles, RotateCcw, CheckCircle, AlertTriangle } from "lucide-react";
 import { createOrder } from "../../api";
+import { colors, font, spacing, shadows, radius } from "design-system";
 
 const URGENCY_MAP = {
-  high: "紧急",
-  medium: "中等",
-  low: "普通"
+  high: { label: "紧急", color: colors.danger },
+  medium: { label: "中等", color: colors.warning },
+  low: { label: "普通", color: colors.success }
 };
 
 const CATEGORY_PRICE = {
@@ -42,16 +44,16 @@ export default function Result() {
 
   if (!data) {
     return (
-      <View style={{ padding: 16, minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
-        <Text style={{ fontSize: 16, color: "#64748B" }}>未获取到解析结果</Text>
+      <View style={{ padding: spacing.md, minHeight: "100vh", backgroundColor: colors.gray[50] }}>
+        <Text style={{ fontSize: font.body.size, color: colors.gray[400] }}>未获取到解析结果</Text>
         <Button
           style={{
             height: 48,
-            borderRadius: 12,
-            backgroundColor: "#2563EB",
-            color: "#FFFFFF",
-            fontSize: 16,
-            marginTop: 20
+            borderRadius: radius.md,
+            backgroundColor: colors.primary[500],
+            color: colors.gray[0],
+            fontSize: font.body.size,
+            marginTop: spacing.lg
           }}
           onClick={() => Taro.redirectTo({ url: "/pages/index/index" })}
         >
@@ -63,88 +65,103 @@ export default function Result() {
 
   const aiResult = data.aiResult || {};
   const priceRange = CATEGORY_PRICE[aiResult.category] || [60, 120];
+  const urgency = URGENCY_MAP[aiResult.urgency];
 
   return (
-    <View style={{ padding: 16, minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
-      <View style={{ marginBottom: 20 }}>
-        <Text style={{ fontSize: 22, fontWeight: 600, color: "#1E293B" }}>AI解析结果</Text>
+    <View style={{ padding: spacing.md, minHeight: "100vh", backgroundColor: colors.gray[50] }}>
+      <View style={{ marginBottom: spacing.lg, display: "flex", alignItems: "center", gap: spacing.sm }}>
+        <Sparkles size={24} color={colors.primary[500]} />
+        <Text style={{ fontSize: font.h3.size, fontWeight: font.h3.weight, color: colors.gray[900] }}>AI解析结果</Text>
       </View>
 
       <View style={{
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 20,
-        boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
+        backgroundColor: colors.gray[0],
+        borderRadius: radius.xl,
+        padding: spacing.xl,
+        marginBottom: spacing.lg,
+        boxShadow: shadows.level1
       }}>
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ color: "#64748B", fontSize: 14 }}>问题类型</Text>
-          <Text style={{ display: "block", fontSize: 18, fontWeight: 600, color: "#1E293B", marginTop: 4 }}>
+        <View style={{ marginBottom: spacing.lg }}>
+          <Text style={{ color: colors.gray[500], fontSize: font.bodySmall.size }}>问题类型</Text>
+          <Text style={{ display: "block", fontSize: font.title.size, fontWeight: font.title.weight, color: colors.gray[900], marginTop: spacing.xs }}>
             {aiResult.category || "通用"}
           </Text>
         </View>
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ color: "#64748B", fontSize: 14 }}>问题描述</Text>
-          <Text style={{ display: "block", fontSize: 16, color: "#475569", marginTop: 4 }}>
+        <View style={{ marginBottom: spacing.lg }}>
+          <Text style={{ color: colors.gray[500], fontSize: font.bodySmall.size }}>问题描述</Text>
+          <Text style={{ display: "block", fontSize: font.body.size, color: colors.gray[600], marginTop: spacing.xs }}>
             {aiResult.problem || "-"}
           </Text>
         </View>
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ color: "#64748B", fontSize: 14 }}>紧急程度</Text>
-          <Text style={{ display: "block", fontSize: 16, color: "#F59E0B", fontWeight: 500, marginTop: 4 }}>
-            {URGENCY_MAP[aiResult.urgency] || aiResult.urgency || "-"}
-          </Text>
+        <View style={{ marginBottom: spacing.lg }}>
+          <Text style={{ color: colors.gray[500], fontSize: font.bodySmall.size }}>紧急程度</Text>
+          <View style={{ display: "flex", alignItems: "center", marginTop: spacing.xs }}>
+            <AlertTriangle size={16} color={urgency?.color || colors.gray[500]} />
+            <Text style={{ display: "block", fontSize: font.body.size, color: urgency?.color || colors.gray[500], fontWeight: fontWeights.medium, marginLeft: spacing.xs }}>
+              {urgency?.label || aiResult.urgency || "-"}
+            </Text>
+          </View>
         </View>
         <View style={{
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          paddingTop: 16,
-          borderTop: "1px solid #E2E8F0"
+          paddingTop: spacing.lg,
+          borderTop: `1px solid ${colors.gray[200]}`
         }}>
-          <Text style={{ fontSize: 16, color: "#475569" }}>预计费用</Text>
+          <Text style={{ fontSize: font.body.size, color: colors.gray[600] }}>预计费用</Text>
           <View style={{ alignItems: "flex-end" }}>
-            <Text style={{ fontSize: 26, color: "#22C55E", fontWeight: 700 }}>
+            <Text style={{ fontSize: font.h2.size, color: colors.success, fontWeight: font.h2.weight }}>
               ¥{priceRange[0]}~{priceRange[1]}
             </Text>
-            <Text style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>（参考）</Text>
+            <Text style={{ fontSize: font.caption.size, color: colors.gray[400], marginTop: spacing.xxs }}>（参考）</Text>
           </View>
         </View>
       </View>
 
-      <View style={{ flexDirection: "row", gap: 12 }}>
+      <View style={{ flexDirection: "row", gap: spacing.md }}>
         <Button
           style={{
             height: 52,
-            borderRadius: 14,
-            backgroundColor: "#FFFFFF",
-            color: "#475569",
-            fontSize: 16,
-            fontWeight: 500,
+            borderRadius: radius.lg,
+            backgroundColor: colors.gray[0],
+            color: colors.gray[600],
+            fontSize: font.body.size,
+            fontWeight: fontWeights.medium,
             flex: 1,
-            border: "1px solid #E2E8F0"
+            border: `1px solid ${colors.gray[200]}`
           }}
           onClick={() => Taro.navigateBack()}
         >
-          重新输入
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+            <RotateCcw size={16} color={colors.gray[600]} />
+            <Text style={{ marginLeft: spacing.xs }}>重新输入</Text>
+          </View>
         </Button>
         <Button
           style={{
             height: 52,
-            borderRadius: 14,
-            backgroundColor: "#2563EB",
-            color: "#FFFFFF",
-            fontSize: 16,
-            fontWeight: 600,
+            borderRadius: radius.lg,
+            backgroundColor: colors.primary[500],
+            color: colors.gray[0],
+            fontSize: font.body.size,
+            fontWeight: fontWeights.medium,
             flex: 1
           }}
           onClick={handleOrder}
           loading={loading}
           disabled={loading}
         >
-          立即下单
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+            <CheckCircle size={16} color={colors.gray[0]} />
+            <Text style={{ marginLeft: spacing.xs }}>立即下单</Text>
+          </View>
         </Button>
       </View>
     </View>
   );
 }
+
+const fontWeights = {
+  medium: 500,
+};

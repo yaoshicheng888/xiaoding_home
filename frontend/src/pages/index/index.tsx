@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { View, Text, Input, Button, Image } from "@tarojs/components";
+import { View, Text, Image } from "@tarojs/components";
 import Taro from "@tarojs/taro";
+import { Snowflake, Droplets, Wrench, Brush, Camera, MapPin, Sparkles, X } from "lucide-react";
 import { aiParse } from "../../api";
+import { Button, Input, colors, font, spacing, shadows, radius } from "design-system";
 
 const SHORTCUTS = [
-  { label: "空调维修", icon: "❄️", category: "空调维修" },
-  { label: "水电维修", icon: "💧", category: "水电维修" },
-  { label: "安装服务", icon: "🔧", category: "安装服务" },
-  { label: "疏通清洗", icon: "🧹", category: "疏通" },
+  { label: "空调维修", icon: <Snowflake size={32} color={colors.primary[500]} />, category: "空调维修" },
+  { label: "水电维修", icon: <Droplets size={32} color={colors.info} />, category: "水电维修" },
+  { label: "安装服务", icon: <Wrench size={32} color={colors.success} />, category: "安装服务" },
+  { label: "疏通清洗", icon: <Brush size={32} color={colors.warning} />, category: "疏通" },
 ];
 
 export default function Index() {
@@ -61,52 +63,48 @@ export default function Index() {
   };
 
   return (
-    <View style={{ minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
-      <View style={{ backgroundColor: "#2563EB", padding: 16, paddingTop: 56 }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <Text style={{ fontSize: 24, color: "#FFFFFF", fontWeight: 600 }}>小钉到家</Text>
-          <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "rgba(255,255,255,0.15)", padding: "6px 12px", borderRadius: 20 }}>
-            <Text style={{ color: "#FFFFFF", fontSize: 14 }}>📍 北京</Text>
+    <View style={{ minHeight: "100vh", backgroundColor: colors.gray[50] }}>
+      <View style={{ backgroundColor: colors.primary[500], padding: spacing.md, paddingTop: 56 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing.lg }}>
+          <Text style={{ fontSize: font.h2.size, color: colors.gray[0], fontWeight: font.h2.weight }}>小钉到家</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "rgba(var(--ds-white-rgb), 0.15)", padding: `${spacing.xs}px ${spacing.sm}px`, borderRadius: radius.xxl }}>
+            <MapPin size={14} color={colors.gray[0]} />
+            <Text style={{ color: colors.gray[0], fontSize: font.bodySmall.size, marginLeft: spacing.xs }}>北京</Text>
           </View>
         </View>
 
-        <View style={{ backgroundColor: "#FFFFFF", borderRadius: 24, padding: 16, boxShadow: "0 6px 20px rgba(37,99,235,0.15)" }}>
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
-            <View style={{ marginRight: 12, width: 24, height: 24, borderRadius: 6, backgroundColor: "#EFF6FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ fontSize: 10, fontWeight: 600, color: "#2563EB" }}>AI</Text>
+        <View style={{ backgroundColor: colors.gray[0], borderRadius: radius.xxl, padding: spacing.md, boxShadow: shadows.level2 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: spacing.md }}>
+            <View style={{ marginRight: spacing.md, width: 24, height: 24, borderRadius: radius.sm, backgroundColor: colors.primary[50], display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Sparkles size={12} color={colors.primary[500]} />
             </View>
-            <Input
-              style={{
-                height: 48,
-                fontSize: 16,
-                flex: 1,
-                color: "#1E293B"
-              }}
-              placeholder="描述您的问题，例如：空调不制冷"
-              placeholderStyle={{ color: "#94A3B8" }}
-              onInput={(e) => setText(e.detail.value)}
-              value={text}
-            />
+            <View style={{ flex: 1, marginRight: spacing.sm }}>
+              <Input
+                inputSize="large"
+                placeholder="描述您的问题，例如：空调不制冷"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+              />
+            </View>
             <View
               style={{
-                marginLeft: 8,
-                width: 48,
-                height: 48,
+                width: 52,
+                height: 52,
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "#F1F5F9",
-                borderRadius: 12
+                backgroundColor: colors.gray[100],
+                borderRadius: radius.md
               }}
               onClick={handleChooseImage}
             >
-              <Text style={{ fontSize: 22 }}>📷</Text>
+              <Camera size={22} color={colors.gray[500]} />
             </View>
           </View>
           {images.length > 0 && (
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, marginBottom: spacing.md }}>
               {images.map((img, idx) => (
                 <View key={idx} style={{ position: "relative" }}>
-                  <Image src={img} style={{ width: 80, height: 80, borderRadius: 12 }} mode="aspectFill" />
+                  <Image src={img} style={{ width: 80, height: 80, borderRadius: radius.md }} mode="aspectFill" />
                   <View
                     style={{
                       position: "absolute",
@@ -114,32 +112,26 @@ export default function Index() {
                       right: -8,
                       width: 24,
                       height: 24,
-                      borderRadius: 12,
-                      backgroundColor: "rgba(0,0,0,0.5)",
+                      borderRadius: radius.full,
+                      backgroundColor: "rgba(var(--ds-black-rgb), 0.5)",
                       justifyContent: "center",
                       alignItems: "center"
                     }}
                     onClick={() => handleRemoveImage(idx)}
                   >
-                    <Text style={{ color: "#FFFFFF", fontSize: 12 }}>✕</Text>
+                    <X size={14} color={colors.gray[0]} />
                   </View>
                 </View>
               ))}
             </View>
           )}
-          <Text style={{ fontSize: 12, color: "#64748B", marginBottom: 16 }}>
+          <Text style={{ fontSize: font.caption.size, color: colors.gray[500], marginBottom: spacing.lg }}>
             支持文字、语音、图片输入
           </Text>
           <Button
-            style={{
-              height: 52,
-              borderRadius: 14,
-              backgroundColor: "#2563EB",
-              color: "#FFFFFF",
-              fontSize: 18,
-              fontWeight: 600,
-              width: "100%"
-            }}
+            variant="primary"
+            size="large"
+            block
             onClick={handleSubmit}
             loading={loading}
             disabled={loading}
@@ -149,25 +141,25 @@ export default function Index() {
         </View>
       </View>
 
-      <View style={{ padding: 16 }}>
-        <Text style={{ fontSize: 20, fontWeight: 600, color: "#1E293B", marginBottom: 16, display: "block" }}>快捷入口</Text>
-        <View style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+      <View style={{ padding: spacing.md }}>
+        <Text style={{ fontSize: font.title.size, fontWeight: font.title.weight, color: colors.gray[900], marginBottom: spacing.md, display: "block" }}>快捷入口</Text>
+        <View style={{ display: "flex", flexWrap: "wrap", gap: spacing.sm }}>
           {SHORTCUTS.map((item) => (
             <View
               key={item.label}
               style={{
                 width: "47%",
-                backgroundColor: "#FFFFFF",
-                borderRadius: 16,
-                padding: 20,
+                backgroundColor: colors.gray[0],
+                borderRadius: radius.xl,
+                padding: spacing.xl,
                 alignItems: "center",
-                border: "1px solid #E2E8F0",
-                boxShadow: "0 2px 8px rgba(15,23,42,0.05)"
+                border: `1px solid ${colors.gray[200]}`,
+                boxShadow: shadows.level1
               }}
               onClick={() => handleShortcutClick(item.category)}
             >
-              <Text style={{ fontSize: 36, marginBottom: 10 }}>{item.icon}</Text>
-              <Text style={{ fontSize: 16, color: "#1E293B", fontWeight: 500 }}>{item.label}</Text>
+              <View style={{ marginBottom: spacing.sm }}>{item.icon}</View>
+              <Text style={{ fontSize: font.body.size, color: colors.gray[900], fontWeight: fontWeights.medium }}>{item.label}</Text>
             </View>
           ))}
         </View>
@@ -175,3 +167,7 @@ export default function Index() {
     </View>
   );
 }
+
+const fontWeights = {
+  medium: 500,
+};

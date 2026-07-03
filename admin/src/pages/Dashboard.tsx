@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Card, Row, Col, message } from "antd";
+import { Row, Col, message } from "antd";
 import { getStats, Stats } from "../api";
+import { Card } from "design-system";
+import { colors, font, spacing, shadows } from "design-system";
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -25,11 +27,11 @@ export default function Dashboard() {
   }, []);
 
   const cardData = [
-    { key: "todayOrders", label: "今日订单", value: stats?.todayOrders || 0, color: "#2563EB" },
-    { key: "todayRevenue", label: "今日成交金额", value: `¥${stats?.todayRevenue || 0}`, color: "#22C55E" },
-    { key: "pendingOrders", label: "待处理订单", value: stats?.pendingOrders || 0, color: "#F59E0B" },
-    { key: "onlineProviders", label: "在线师傅", value: stats?.onlineProviders || 0, color: "#06B6D4" },
-    { key: "abnormalOrders", label: "异常订单", value: stats?.abnormalOrders || 0, color: "#EF4444" },
+    { key: "todayOrders", label: "今日订单", value: stats?.todayOrders || 0, color: colors.primary[500] },
+    { key: "todayRevenue", label: "今日成交金额", value: `¥${stats?.todayRevenue || 0}`, color: colors.success },
+    { key: "pendingOrders", label: "待处理订单", value: stats?.pendingOrders || 0, color: colors.warning },
+    { key: "onlineProviders", label: "在线师傅", value: stats?.onlineProviders || 0, color: colors.info },
+    { key: "abnormalOrders", label: "异常订单", value: stats?.abnormalOrders || 0, color: colors.danger },
   ];
 
   const trendData = [
@@ -45,33 +47,44 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h2 style={{ marginBottom: 24, fontSize: 24, fontWeight: 600, color: "#1E293B" }}>控制台</h2>
-      <Row gutter={[24, 24]}>
+      <h2 style={{ marginBottom: spacing.xl, fontSize: font.h2.size, fontWeight: font.h2.weight, color: colors.gray[900] }}>
+        控制台
+      </h2>
+      <Row gutter={[spacing.xl, spacing.xl]}>
         {cardData.map((item) => (
           <Col span={4} key={item.key}>
-            <Card loading={loading} hoverable style={{ borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,.05)" }}>
-              <div style={{ fontSize: "14px", color: "#64748B", marginBottom: "8px" }}>{item.label}</div>
-              <div style={{ fontSize: "28px", fontWeight: 700, color: item.color }}>{item.value}</div>
+            <Card style={{ boxShadow: shadows.level1 }}>
+              <div style={{ fontSize: font.bodySmall.size, color: colors.gray[500], marginBottom: spacing.sm }}>
+                {item.label}
+              </div>
+              <div style={{ fontSize: font.h1.size, fontWeight: font.h1.weight, color: item.color }}>
+                {loading ? "-" : item.value}
+              </div>
             </Card>
           </Col>
         ))}
       </Row>
-      <Card title="订单趋势（近7天）" style={{ marginTop: 32, borderRadius: 16, boxShadow: "0 2px 8px rgba(15,23,42,.05)" }}>
-        <div style={{ display: "flex", alignItems: "flex-end", height: 200, gap: 16, padding: "0 24px" }}>
+      <Card style={{ marginTop: spacing.xxl, boxShadow: shadows.level1 }}>
+        <h3 style={{ marginBottom: spacing.lg, fontSize: font.title.size, fontWeight: font.title.weight, color: colors.gray[900] }}>
+          订单趋势（近7天）
+        </h3>
+        <div style={{ display: "flex", alignItems: "flex-end", height: 200, gap: spacing.lg, padding: `0 ${spacing.xl}px` }}>
           {trendData.map((item) => (
             <div key={item.day} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8 }}>{item.count}</div>
+              <div style={{ fontSize: font.bodySmall.size, fontWeight: font.title.weight, color: colors.gray[600], marginBottom: spacing.sm }}>
+                {item.count}
+              </div>
               <div
                 style={{
                   width: "100%",
                   maxWidth: 56,
                   height: (item.count / maxCount) * 140,
-                  backgroundColor: "#2563EB",
-                  borderRadius: "8px 8px 0 0",
+                  backgroundColor: colors.primary[500],
+                  borderRadius: `${radius.sm}px ${radius.sm}px 0 0`,
                   transition: "height 0.3s ease-out",
                 }}
               />
-              <div style={{ fontSize: 12, color: "#64748B", marginTop: 12 }}>{item.day}</div>
+              <div style={{ fontSize: font.caption.size, color: colors.gray[500], marginTop: spacing.md }}>{item.day}</div>
             </div>
           ))}
         </div>
