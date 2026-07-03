@@ -1,0 +1,18 @@
+# 小钉到家 MVP - 本地依赖(MySQL)
+# 用法: docker compose up -d
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: xiaoding-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: xiaoding_daojia
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci

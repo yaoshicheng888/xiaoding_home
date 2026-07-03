@@ -1,0 +1,6 @@
+@import "../../design-system/src/tokens/tokens.css";
+
+page {
+  background: var(--ds-bg-page);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", sans-serif;
+}

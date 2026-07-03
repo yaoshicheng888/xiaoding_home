@@ -1,0 +1,25 @@
+{
+  "name": "xiaoding-home",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "admin",
+    "provider",
+    "frontend",
+    "design-system",
+    "packages/ui"
+  ],
+  "scripts": {
+    "build:admin": "npm run build --workspace=admin",
+    "build:provider": "npm run build --workspace=provider",
+    "build:frontend": "npm run build:h5 --workspace=frontend",
+    "build:design-system": "npm run build --workspace=design-system"
+  },
+  "overrides": {
+    "schema-utils@^4": {
+      "ajv": "^8.20.0",
+      "ajv-keywords": "^5.1.0"
+    }
+  }
+}

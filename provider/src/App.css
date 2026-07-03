@@ -1,0 +1,86 @@
+@import "design-system/tokens.css";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", sans-serif;
+  background-color: var(--ds-bg-page);
+}
+
+.app-container {
+  min-height: 100vh;
+}
+
+.page-header {
+  padding: 16px 20px;
+  background-color: var(--ds-bg-nav);
+  border-bottom: 1px solid var(--ds-border-default);
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.page-header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ds-text-primary);
+}
+
+.page-header-back {
+  color: var(--ds-text-link);
+  cursor: pointer;
+  margin-right: 16px;
+  font-size: 16px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.page-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--ds-bg-page);
+}
+
+.page-padding {
+  padding: 16px;
+}
+
+.card {
+  background-color: var(--ds-bg-card);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(var(--ds-gray-900-rgb), 0.05);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--ds-text-tertiary);
+}
+
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--ds-bg-nav);
+  padding: 16px 20px;
+  border-top: 1px solid var(--ds-border-default);
+  box-shadow: 0 -2px 10px rgba(var(--ds-gray-900-rgb), 0.05);
+}
+
+.fixed-bottom-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}

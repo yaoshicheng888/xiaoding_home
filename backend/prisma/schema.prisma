@@ -1,0 +1,139 @@
+// 小钉到家 - Prisma Schema (MVP)
+// 数据库: SQLite
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 订单状态: created -> assigned -> accepted -> doing -> completed
+// 派单任务类型: auto / manual
+// 派单任务状态: pending / taken / failed
+
+// ============ 用户表 ============
+model User {
+  id        Int      @id @default(autoincrement())
+  phone     String   @unique
+  name      String?
+  avatar    String?
+  city      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serviceRequests ServiceRequest[]
+  orders          Order[]
+}
+
+// ============ 师傅表 ============
+model Provider {
+  id        Int      @id @default(autoincrement())
+  phone     String   @unique
+  name      String
+  skillTags String   @default("通用")
+  status    String   @default("online") // online / offline / busy
+  rating    Float    @default(5.0)
+  balance   Float    @default(0)
+  city      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs   Job[]
+  orders Order[]
+}
+
+// ============ AI解析单 ============
+model ServiceRequest {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  rawText    String
+  aiCategory String?
+  aiProblem  String?
+  aiUrgency  String?
+  aiResult   String?
+  createdAt  DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id])
+  orders Order[]
+}
+
+// ============ 订单表 (核心) ============
+model Order {
+  id          Int      @id @default(autoincrement())
+  requestId   Int?
+  userId      Int
+  providerId  Int?
+  status      String   @default("created")
+  category    String?
+  description String?
+  price       Float    @default(0)
+  commission  Float    @default(0)
+  remark      String?
+  images      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user       User           @relation(fields: [userId], references: [id])
+  provider   Provider?      @relation(fields: [providerId], references: [id])
+  request    ServiceRequest? @relation(fields: [requestId], references: [id])
+  job        Job?
+  statusLogs OrderStatusLog[]
+  payment    Payment?
+  afterSales AfterSale[]
+}
+
+// ============ 订单状态流转记录 ============
+model OrderStatusLog {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  fromStatus String
+  toStatus   String
+  operator   String?
+  remark     String?
+  createdAt  DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+// ============ 派单任务 ============
+model Job {
+  id         Int      @id @default(autoincrement())
+  orderId    Int      @unique
+  providerId Int
+  type       String   @default("auto")
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+
+  order    Order    @relation(fields: [orderId], references: [id])
+  provider Provider @relation(fields: [providerId], references: [id])
+}
+
+// ============ 支付表 ============
+model Payment {
+  id           Int      @id @default(autoincrement())
+  orderId      Int      @unique
+  amount       Float
+  platformFee  Float    @default(0)
+  providerIncome Float  @default(0)
+  status       String   @default("pending") // pending / paid / settled / refunded
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+// ============ 售后表 ============
+model AfterSale {
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  reason      String
+  status      String   @default("pending") // pending / processing / resolved / rejected
+  freezeStatus String  @default("unfrozen") // frozen / unfrozen
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+}

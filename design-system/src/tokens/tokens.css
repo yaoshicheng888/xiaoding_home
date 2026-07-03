@@ -1,0 +1,52 @@
+:root {
+  --ds-primary-50: #EFF6FF;
+  --ds-primary-100: #DBEAFE;
+  --ds-primary-200: #BFDBFE;
+  --ds-primary-300: #93C5FD;
+  --ds-primary-400: #60A5FA;
+  --ds-primary-500: #2563EB;
+  --ds-primary-600: #1D4ED8;
+  --ds-primary-700: #1E40AF;
+  --ds-primary-800: #1E3A8A;
+  --ds-primary-900: #172554;
+
+  --ds-success: #22C55E;
+  --ds-warning: #F59E0B;
+  --ds-danger: #EF4444;
+  --ds-info: #06B6D4;
+
+  --ds-gray-0: #FFFFFF;
+  --ds-white-rgb: 255, 255, 255;
+  --ds-black-rgb: 0, 0, 0;
+  --ds-gray-50: #F8FAFC;
+  --ds-gray-100: #F1F5F9;
+  --ds-gray-200: #E2E8F0;
+  --ds-gray-300: #CBD5E1;
+  --ds-gray-400: #94A3B8;
+  --ds-gray-500: #64748B;
+  --ds-gray-600: #475569;
+  --ds-gray-700: #334155;
+  --ds-gray-800: #1E293B;
+  --ds-gray-900: #0F172A;
+  --ds-gray-900-rgb: 15, 23, 42;
+
+  --ds-text-primary: var(--ds-gray-900);
+  --ds-text-secondary: var(--ds-gray-700);
+  --ds-text-tertiary: var(--ds-gray-500);
+  --ds-text-disabled: var(--ds-gray-400);
+  --ds-text-link: var(--ds-primary-500);
+  --ds-text-error: var(--ds-danger);
+  --ds-text-success: var(--ds-success);
+
+  --ds-bg-page: var(--ds-gray-50);
+  --ds-bg-card: var(--ds-gray-0);
+  --ds-bg-nav: var(--ds-gray-0);
+  --ds-bg-dialog: var(--ds-gray-0);
+  --ds-bg-input: var(--ds-gray-0);
+
+  --ds-border-default: var(--ds-gray-200);
+  --ds-border-hover: var(--ds-primary-300);
+  --ds-border-focus: var(--ds-primary-500);
+  --ds-border-error: var(--ds-danger);
+  --ds-border-disabled: var(--ds-gray-200);
+}
