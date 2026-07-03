@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { View, Text, Button } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { ClipboardList, MapPin, MessageCircle, Settings, User, ChevronRight, LogOut } from "lucide-react";
 import { getUserInfo } from "../../api";
-import { colors, font, spacing, shadows, radius } from "design-system";
+import { Button, colors, font, spacing, shadows, radius } from "design-system";
 
 const MENU_ITEMS = [
   { label: "我的订单", icon: <ClipboardList size={22} color={colors.primary[500]} />, url: "/pages/orders/index" },
@@ -124,28 +124,20 @@ export default function MinePage() {
 
         <View style={{ marginTop: spacing.md }}>
           <Button
+            variant="secondary"
+            size="large"
+            block
             style={{
-              height: 48,
-              borderRadius: radius.md,
-              backgroundColor: colors.gray[0],
               color: colors.danger,
-              fontSize: font.body.size,
-              fontWeight: fontWeights.medium,
-              border: `1px solid ${colors.danger}`
+              border: `1px solid ${colors.danger}`,
             }}
+            icon={<LogOut size={16} />}
             onClick={handleLogout}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-              <LogOut size={16} color={colors.danger} />
-              <Text style={{ marginLeft: spacing.xs }}>退出登录</Text>
-            </View>
+            退出登录
           </Button>
         </View>
       </View>
     </View>
   );
 }
-
-const fontWeights = {
-  medium: 500,
-};

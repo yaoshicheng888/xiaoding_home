@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { View, Text, Button } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { Sparkles, RotateCcw, CheckCircle, AlertTriangle } from "lucide-react";
 import { createOrder } from "../../api";
-import { colors, font, spacing, shadows, radius } from "design-system";
+import { Button, colors, font, spacing, shadows, radius } from "design-system";
 
 const URGENCY_MAP = {
   high: { label: "紧急", color: colors.danger },
@@ -47,14 +47,9 @@ export default function Result() {
       <View style={{ padding: spacing.md, minHeight: "100vh", backgroundColor: colors.gray[50] }}>
         <Text style={{ fontSize: font.body.size, color: colors.gray[400] }}>未获取到解析结果</Text>
         <Button
-          style={{
-            height: 48,
-            borderRadius: radius.md,
-            backgroundColor: colors.primary[500],
-            color: colors.gray[0],
-            fontSize: font.body.size,
-            marginTop: spacing.lg
-          }}
+          variant="primary"
+          size="large"
+          style={{ marginTop: spacing.lg }}
           onClick={() => Taro.redirectTo({ url: "/pages/index/index" })}
         >
           返回
@@ -121,41 +116,24 @@ export default function Result() {
 
       <View style={{ flexDirection: "row", gap: spacing.md }}>
         <Button
-          style={{
-            height: 52,
-            borderRadius: radius.lg,
-            backgroundColor: colors.gray[0],
-            color: colors.gray[600],
-            fontSize: font.body.size,
-            fontWeight: fontWeights.medium,
-            flex: 1,
-            border: `1px solid ${colors.gray[200]}`
-          }}
+          variant="secondary"
+          size="large"
+          style={{ flex: 1 }}
+          icon={<RotateCcw size={16} />}
           onClick={() => Taro.navigateBack()}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-            <RotateCcw size={16} color={colors.gray[600]} />
-            <Text style={{ marginLeft: spacing.xs }}>重新输入</Text>
-          </View>
+          重新输入
         </Button>
         <Button
-          style={{
-            height: 52,
-            borderRadius: radius.lg,
-            backgroundColor: colors.primary[500],
-            color: colors.gray[0],
-            fontSize: font.body.size,
-            fontWeight: fontWeights.medium,
-            flex: 1
-          }}
+          variant="primary"
+          size="large"
+          style={{ flex: 1 }}
+          icon={<CheckCircle size={16} />}
           onClick={handleOrder}
           loading={loading}
           disabled={loading}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-            <CheckCircle size={16} color={colors.gray[0]} />
-            <Text style={{ marginLeft: spacing.xs }}>立即下单</Text>
-          </View>
+          立即下单
         </Button>
       </View>
     </View>

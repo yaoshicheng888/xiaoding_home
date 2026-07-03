@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, X, Upload, User, Phone, MapPin, Calendar, FileText } from "lucide-react";
 import { getOrderDetail, startService, completeOrder } from "../../api";
-import { Card, Button, Badge } from "design-system";
+import { Card, Button, Badge, Textarea } from "design-system";
 import { colors, font, spacing, shadows, radius } from "design-system";
 
 const STATUS_MAP: Record<string, { label: string; status: "warning" | "info" | "success" | "default" }> = {
@@ -208,22 +208,12 @@ export default function Detail({ orderId, onBack }: { orderId: number; onBack: (
             </div>
             <div>
               <div style={{ fontSize: font.bodySmall.size, fontWeight: fontWeights.medium, color: colors.gray[600], marginBottom: spacing.sm }}>文字说明</div>
-              <textarea
+              <Textarea
                 value={remark}
                 onChange={(e) => setRemark(e.target.value)}
                 placeholder="请输入服务说明..."
-                style={{
-                  width: "100%",
-                  minHeight: 100,
-                  borderRadius: radius.md,
-                  border: `1px solid ${colors.gray[200]}`,
-                  padding: spacing.md,
-                  fontSize: font.bodySmall.size,
-                  resize: "vertical",
-                  boxSizing: "border-box",
-                  backgroundColor: colors.gray[50],
-                  color: colors.gray[900]
-                }}
+                inputSize="medium"
+                style={{ minHeight: 100 }}
               />
             </div>
           </Card>

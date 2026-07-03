@@ -1,4 +1,4 @@
-@import "design-system/tokens.css";
+@import "../../design-system/src/tokens/tokens.css";
 
 page {
   background: var(--ds-bg-page);

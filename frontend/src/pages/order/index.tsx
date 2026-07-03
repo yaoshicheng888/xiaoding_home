@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { View, Text, Button } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { Check, Star, Phone, User, FileText, Clock } from "lucide-react";
 import { getOrder } from "../../api";
-import { colors, font, spacing, shadows, radius } from "design-system";
+import { Button, colors, font, spacing, shadows, radius } from "design-system";
 
 const STATUS_MAP = {
   created: { label: "待接单", color: colors.warning },
@@ -156,14 +156,12 @@ export default function OrderPage() {
             </Text>
           </View>
           <Button
+            variant="secondary"
+            size="large"
+            block
             style={{
-              height: 52,
-              borderRadius: radius.lg,
-              backgroundColor: colors.gray[0],
               color: colors.danger,
-              fontSize: font.body.size,
-              fontWeight: fontWeights.medium,
-              border: `1px solid ${colors.danger}`
+              border: `1px solid ${colors.danger}`,
             }}
             onClick={() => {
               Taro.showToast({ title: "售后申请已提交", icon: "none" });
