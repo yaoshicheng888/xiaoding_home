@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Table, Tag, Button, message } from "antd";
 import { getAfterSales, AfterSale, afterSaleStatusMap } from "../api";
 
-export default function AfterSale() {
+export default function AfterSalePage() {
   const [afterSales, setAfterSales] = useState<AfterSale[]>([]);
   const [loading, setLoading] = useState(false);
 
