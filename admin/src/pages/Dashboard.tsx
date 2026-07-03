@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Row, Col, message } from "antd";
 import { getStats, Stats } from "../api";
 import { Card } from "design-system";
-import { colors, font, spacing, shadows } from "design-system";
+import { colors, font, spacing, shadows, radius } from "design-system";
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
