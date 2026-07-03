@@ -1,0 +1,32 @@
+@import "./keyframes.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary-500: #1677ff;
+    --color-success-500: #22c55e;
+    --color-warning-500: #f59e0b;
+    --color-danger-500: #ef4444;
+    --color-info-500: #3b82f6;
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-text-disabled: #9ca3af;
+    --color-bg-white: #ffffff;
+    --color-bg-gray: #f3f4f6;
+  }
+
+  .dark {
+    --color-text-primary: #f9fafb;
+    --color-text-secondary: #d1d5db;
+    --color-text-disabled: #6b7280;
+    --color-bg-white: #111827;
+    --color-bg-gray: #1f2937;
+  }
+
+  html {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  }
+}
